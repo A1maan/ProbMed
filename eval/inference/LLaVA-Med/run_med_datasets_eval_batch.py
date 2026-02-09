@@ -7,8 +7,8 @@ Handles parallel chunk processing.
 Usage:
     python run_med_datasets_eval_batch.py \
         --model-name chaoyinshe/llava-med-v1.5-mistral-7b-hf \
-        --question-file /path/to/test.json \
-        --image-folder /path/to/probmed \
+        --question-file /path/to/probmed.json \
+        --image-folder /path/to/images \
         --answers-file /path/to/output.jsonl \
         --num-chunks 4
 """
@@ -46,8 +46,12 @@ def parse_args():
 def run_job(chunk_idx, args):
     """Run inference for a single chunk."""
     
+    # Get the directory where this script is located
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    model_vqa_script = os.path.join(script_dir, "model_vqa_med.py")
+    
     cmd = (
-        "CUDA_VISIBLE_DEVICES={chunk_idx} python model_vqa_med.py "
+        "CUDA_VISIBLE_DEVICES={chunk_idx} python {model_vqa_script} "
         "--model-name {model_name} "
         "--question-file {question_file} "
         "--image-folder {image_folder} "
@@ -58,6 +62,7 @@ def run_job(chunk_idx, args):
         "--max-new-tokens {max_new_tokens} "
     ).format(
         chunk_idx=chunk_idx,
+        model_vqa_script=model_vqa_script,
         chunks=args.num_chunks,
         model_name=args.model_name,
         question_file=args.question_file,
