@@ -1,0 +1,35 @@
+=== Printing accuracy in Appendix Tables ===
+llavamed ct scan_abdomen
+{'abnormality': {'acc': 31.428571428571427, 'num': 70}, 'modality': {'acc': 49.66711051930759, 'acc w. hallu': 99.6005326231691, 'num': 751}, 'body_part': {'acc': 57.25699067909454, 'acc w. hallu': 83.75499334221038, 'num': 751}, 'entity': {'acc': 14.380825565912117, 'acc w. hallu': 18.10918774966711, 'num': 751}, 'grounding': {'acc': 20.165289256198346, 'acc w. hallu': 53.223140495867774, 'num': 751}}
+llavamed ct scan_brain
+{'abnormality': {'acc': 32.35294117647059, 'num': 34}, 'modality': {'acc': 47.77777777777778, 'acc w. hallu': 96.66666666666667, 'num': 270}, 'body_part': {'acc': 65.55555555555556, 'acc w. hallu': 86.66666666666667, 'num': 270}, 'entity': {'acc': 15.555555555555555, 'acc w. hallu': 18.51851851851852, 'num': 270}, 'grounding': {'acc': 16.842105263157894, 'acc w. hallu': 54.21052631578947, 'num': 270}}
+llavamed ct scan_chest
+{'abnormality': {'acc': 17.647058823529413, 'num': 34}, 'modality': {'acc': 45.43795620437956, 'acc w. hallu': 99.45255474452554, 'num': 548}, 'body_part': {'acc': 61.861313868613145, 'acc w. hallu': 94.52554744525547, 'num': 548}, 'entity': {'acc': 17.335766423357665, 'acc w. hallu': 25.91240875912409, 'num': 548}, 'grounding': {'acc': 15.898617511520738, 'acc w. hallu': 67.74193548387096, 'num': 548}}
+llavamed ct scan_spine
+{'abnormality': {'acc': 0.0, 'num': 2}, 'modality': {'acc': 44.827586206896555, 'acc w. hallu': 97.70114942528735, 'num': 87}, 'body_part': {'acc': 54.02298850574713, 'acc w. hallu': 80.45977011494253, 'num': 87}, 'entity': {'acc': 9.195402298850574, 'acc w. hallu': 12.643678160919542, 'num': 87}, 'grounding': {'acc': 17.94871794871795, 'acc w. hallu': 48.717948717948715, 'num': 87}}
+llavamed mri_abdomen
+{'abnormality': {'acc': 28.57142857142857, 'num': 14}, 'modality': {'acc': 48.80952380952381, 'acc w. hallu': 96.42857142857143, 'num': 84}, 'body_part': {'acc': 48.80952380952381, 'acc w. hallu': 80.95238095238095, 'num': 84}, 'entity': {'acc': 16.666666666666664, 'acc w. hallu': 19.047619047619047, 'num': 84}, 'grounding': {'acc': 22.727272727272727, 'acc w. hallu': 57.57575757575758, 'num': 84}}
+llavamed mri_brain
+{'abnormality': {'acc': 17.857142857142858, 'num': 56}, 'modality': {'acc': 69.78798586572438, 'acc w. hallu': 98.40989399293287, 'num': 566}, 'body_part': {'acc': 71.02473498233216, 'acc w. hallu': 92.75618374558304, 'num': 566}, 'entity': {'acc': 15.724381625441698, 'acc w. hallu': 22.614840989399294, 'num': 566}, 'grounding': {'acc': 14.5985401459854, 'acc w. hallu': 52.06812652068127, 'num': 566}}
+llavamed mri_chest
+{'abnormality': {'acc': 37.5, 'num': 8}, 'modality': {'acc': 42.5, 'acc w. hallu': 87.5, 'num': 40}, 'body_part': {'acc': 27.500000000000004, 'acc w. hallu': 60.0, 'num': 40}, 'entity': {'acc': 20.0, 'acc w. hallu': 35.0, 'num': 40}, 'grounding': {'acc': 11.76470588235294, 'acc w. hallu': 52.94117647058824, 'num': 40}}
+llavamed mri_spine
+{'abnormality': {'acc': 8.333333333333332, 'num': 36}, 'modality': {'acc': 60.802469135802475, 'acc w. hallu': 95.98765432098766, 'num': 324}, 'body_part': {'acc': 67.5925925925926, 'acc w. hallu': 89.50617283950618, 'num': 324}, 'entity': {'acc': 15.74074074074074, 'acc w. hallu': 21.91358024691358, 'num': 324}, 'grounding': {'acc': 14.864864864864865, 'acc w. hallu': 48.986486486486484, 'num': 324}}
+llavamed x-ray_abdomen
+{'abnormality': {'acc': 35.0, 'num': 20}, 'modality': {'acc': 52.1551724137931, 'acc w. hallu': 99.13793103448276, 'num': 232}, 'body_part': {'acc': 42.672413793103445, 'acc w. hallu': 79.3103448275862, 'num': 232}, 'entity': {'acc': 13.793103448275861, 'acc w. hallu': 17.24137931034483, 'num': 232}, 'grounding': {'acc': 15.819209039548024, 'acc w. hallu': 42.93785310734463, 'num': 232}}
+llavamed x-ray_brain
+{'abnormality': {'acc': 33.33333333333333, 'num': 6}, 'modality': {'acc': 45.56962025316456, 'acc w. hallu': 96.20253164556962, 'num': 79}, 'body_part': {'acc': 20.253164556962027, 'acc w. hallu': 41.77215189873418, 'num': 79}, 'entity': {'acc': 16.455696202531644, 'acc w. hallu': 17.72151898734177, 'num': 79}, 'grounding': {'acc': 17.77777777777778, 'acc w. hallu': 46.666666666666664, 'num': 79}}
+llavamed x-ray_chest
+{'abnormality': {'acc': 27.97741273100616, 'num': 1948}, 'modality': {'acc': 60.96153846153847, 'acc w. hallu': 99.58333333333333, 'num': 3120}, 'body_part': {'acc': 60.83333333333333, 'acc w. hallu': 99.13461538461539, 'num': 3120}, 'entity': {'acc': 27.94871794871795, 'acc w. hallu': 31.25, 'num': 3120}, 'grounding': {'acc': 17.961654894046415, 'acc w. hallu': 66.09485368314833, 'num': 3120}}
+llavamed x-ray_spine
+{'abnormality': {'acc': 50.0, 'num': 24}, 'modality': {'acc': 42.57425742574257, 'acc w. hallu': 98.01980198019803, 'num': 202}, 'body_part': {'acc': 52.97029702970298, 'acc w. hallu': 89.60396039603961, 'num': 202}, 'entity': {'acc': 18.316831683168317, 'acc w. hallu': 24.752475247524753, 'num': 202}, 'grounding': {'acc': 14.367816091954023, 'acc w. hallu': 44.252873563218394, 'num': 202}}
+==============================
+=== Printing accuracy aggregated over modality-organ ===
+llavamed {'abnormality': {'acc': 27.75310834813499, 'num': 2252}, 'modality': {'acc': 56.87767729652546, 'num': 6303, 'acc w. hallu': 98.90528319847692}, 'body_part': {'acc': 60.06663493574489, 'num': 6303, 'acc w. hallu': 92.79708075519594}, 'entity': {'acc': 21.71981596065366, 'num': 6303, 'acc w. hallu': 26.13041408852927}, 'grounding': {'acc': 17.36336881725488, 'num': 6303, 'acc w. hallu': 59.82356453554824}}
+==============================
+=== Printing overall accuracy further aggregated over question types ===
+llavamed:
+  acc w. adv. pair: 38.08%
+  acc w.o. adv. pair: 69.41%
+  acc. diff: 31.33%
+==============================

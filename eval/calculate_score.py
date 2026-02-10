@@ -294,36 +294,30 @@ def get_model_score_vqa_rad_ablation(ans_file_name):
     return sum(score_w_adv)/len(score_w_adv), sum(score_wo_adv)/len(score_wo_adv)
 
 def main():
-    models = ["chexagent", "gemini", "gpt4v", "llava_v1.6", "llava_v1", "llavamed", "minigptv2", "gpt4o", "med-flamingo", "biomedgpt"]
+    # Changed: Only evaluate llavamed
+    models = ["llavamed"]
     all_model_data = parse_response(models)
     all_scores, all_scores_aggr_question, overall_scores_aggr_question = get_scores_probmed(all_model_data)
 
-    # # uncomment the block to print fine-grained accuracy
-    # print('=== Printing accuracy in Appendix Tables ===')
-    # for model, v in all_scores.items():
-    #     for image_type, s in v.items():
-    #         print(model, image_type)
-    #         print(s)
-    # print('=' * 30)
+    # Print fine-grained accuracy
+    print('=== Printing accuracy in Appendix Tables ===')
+    for model, v in all_scores.items():
+        for image_type, s in v.items():
+            print(model, image_type)
+            print(s)
+    print('=' * 30)
 
     print('=== Printing accuracy aggregated over modality-organ ===')
     for model, v in all_scores_aggr_question.items():
         print(model, v)
     print('=' * 30)
 
-    print('=== Printing overall accuracy further aggregated over question types and difference w.&w.o. adv. pairs ===')
+    print('=== Printing overall accuracy further aggregated over question types ===')
     for model, overall_score in overall_scores_aggr_question.items():
-        print(f"{model} acc. w.o. adv. pair: {overall_score['acc w.o. adv pair']}, acc. w. adv. pair: {overall_score['acc w.o. adv pair']}, acc. diff: {overall_score['acc w.o. adv pair']}")
-    print('=' * 30)
-
-    print('=== Printing accuracy on ablation set and difference w.&w.o. adv. pairs ===')
-    model_names = ["llava_v1.jsonl", "llava_v1.6.jsonl", "llavamed.jsonl", "minigptv2.jsonl", "chexagent.jsonl", "gpt4v.json", "gemini.jsonl", "gpt4o.json", "med-flamingo.jsonl", "biomedgpt.json"]
-    summ = []
-    for model in model_names:
-        score = get_model_score_vqa_rad_ablation(f'ablation/{model}')
-        print(f"{model} acc. w.o. adv. pair: {score[1]*100}, acc. w. adv. pair: {score[0]*100}, acc. diff: {score[1]*100 - score[0]*100}")
-        summ.append(score[1]*100 - score[0]*100)
-    print(f"average drop: {sum(summ)/len(summ)}")
+        print(f"{model}:")
+        print(f"  acc w. adv. pair: {overall_score['acc']:.2f}%")
+        print(f"  acc w.o. adv. pair: {overall_score['acc w.o. adv pair']:.2f}%")
+        print(f"  acc. diff: {overall_score['acc w.o. adv pair'] - overall_score['acc']:.2f}%")
     print('=' * 30)
 
 
