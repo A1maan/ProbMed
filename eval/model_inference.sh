@@ -12,8 +12,8 @@ pip install -q transformers accelerate bitsandbytes pillow tqdm
 # ============================================
 # CONFIGURATION - Update these paths
 # ============================================
-question_file="/content/drive/MyDrive/ProbMed/test/test.json"
-image_folder="/content/drive/MyDrive/ProbMed/test"
+question_file="/workspace/ProbMed-Dataset/test/test.json"
+image_folder="/workspace/ProbMed-Dataset/test/"
 answer_file="./response_file/${model_name}"
 answer_file_json="./response_file/${model_name}.json"
 
@@ -32,11 +32,12 @@ echo "=========================================="
 if [ "${model_name}" == "llavamed" ]; then
     # Using HuggingFace model
     python ${LLAVAMED_INFERENCE_DIR}/run_med_datasets_eval_batch.py \
-        --num-chunks 1 \
+        --num-chunks 4 \
         --model-name ${LLAVAMED_HF} \
         --question-file ${question_file} \
         --image-folder ${image_folder} \
         --answers-file ${answer_file}.jsonl \
+        --batch-size 1 \
         --load-8bit
     
     # Convert JSONL to JSON for calculate_score.py
@@ -52,11 +53,12 @@ print('Converted to JSON: ${answer_file_json}')
 elif [ "${model_name}" == "llavamed_hf" ]; then
     # Alternative name for HF version
     python ${LLAVAMED_INFERENCE_DIR}/run_med_datasets_eval_batch.py \
-        --num-chunks 1 \
+        --num-chunks 4 \
         --model-name ${LLAVAMED_HF} \
         --question-file ${question_file} \
         --image-folder ${image_folder} \
         --answers-file ${answer_file}.jsonl \
+        --batch-size 1 \
         --load-8bit
     
     python -c "

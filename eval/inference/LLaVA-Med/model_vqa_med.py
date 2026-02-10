@@ -66,6 +66,9 @@ def load_model(model_name, load_8bit=True):
     if processor.tokenizer.pad_token is None:
         processor.tokenizer.pad_token = processor.tokenizer.eos_token
     
+    # Set left padding for decoder-only models (important for batched generation)
+    processor.tokenizer.padding_side = "left"
+    
     model.eval()
     print("Model loaded successfully!")
     
@@ -92,14 +95,16 @@ def format_prompt(question, processor):
     return prompt
 
 
-def run_inference(model, processor, image, question, temperature=0.7, max_new_tokens=1024):
-    """Run inference on a single image-question pair."""
+def run_inference_batch(model, processor, images, questions, temperature=0.7, max_new_tokens=1024):
+    """Run inference on a batch of image-question pairs."""
     
-    prompt = format_prompt(question, processor)
+    # Format prompts
+    prompts = [format_prompt(q, processor) for q in questions]
     
+    # Process inputs as batch
     inputs = processor(
-        text=prompt,
-        images=image,
+        text=prompts,
+        images=images,
         return_tensors="pt",
         padding=True
     )
@@ -116,7 +121,42 @@ def run_inference(model, processor, image, question, temperature=0.7, max_new_to
             pad_token_id=processor.tokenizer.pad_token_id,
         )
     
-    # Decode only the new tokens
+    # Decode responses
+    responses = []
+    input_len = inputs['input_ids'].shape[1]
+    for i in range(len(questions)):
+        response = processor.tokenizer.decode(
+            output_ids[i][input_len:],
+            skip_special_tokens=True
+        ).strip()
+        responses.append(response)
+    
+    return responses
+
+
+def run_inference_single(model, processor, image, question, temperature=0.7, max_new_tokens=1024):
+    """Run inference on a single image-question pair (fallback)."""
+    
+    prompt = format_prompt(question, processor)
+    
+    inputs = processor(
+        text=prompt,
+        images=image,
+        return_tensors="pt",
+        padding=True
+    )
+    
+    inputs = {k: v.to(model.device) if hasattr(v, 'to') else v for k, v in inputs.items()}
+    
+    with torch.inference_mode():
+        output_ids = model.generate(
+            **inputs,
+            max_new_tokens=max_new_tokens,
+            do_sample=temperature > 0,
+            temperature=temperature if temperature > 0 else None,
+            pad_token_id=processor.tokenizer.pad_token_id,
+        )
+    
     input_len = inputs['input_ids'].shape[1]
     response = processor.tokenizer.decode(
         output_ids[0][input_len:],
@@ -129,8 +169,11 @@ def run_inference(model, processor, image, question, temperature=0.7, max_new_to
 def eval_model(args):
     """Main evaluation function - matches original interface."""
     
+    # Determine if using 8-bit
+    use_8bit = args.load_8bit and not args.no_8bit
+    
     # Load model
-    model, processor = load_model(args.model_name, load_8bit=args.load_8bit)
+    model, processor = load_model(args.model_name, load_8bit=use_8bit)
     
     # Load questions
     questions = json.load(open(os.path.expanduser(args.question_file), "r"))
@@ -141,51 +184,87 @@ def eval_model(args):
     os.makedirs(os.path.dirname(answers_file), exist_ok=True)
     ans_file = open(answers_file, "w")
     
-    for i, line in enumerate(tqdm(questions)):
-        idx = line["id"]
-        qa_type = line.get("qa_type", "unknown")
-        answer = line.get("answer", line.get("gt_ans", ""))
-        image_type = line.get("image_type", "unknown")
+    batch_size = args.batch_size
+    
+    # Process in batches
+    for batch_start in tqdm(range(0, len(questions), batch_size), desc=f"Chunk {args.chunk_idx}"):
+        batch_end = min(batch_start + batch_size, len(questions))
+        batch_items = questions[batch_start:batch_end]
         
-        # Get question text
-        qs = line.get("question", "")
-        qs = qs.replace('<image>', '').strip()
-        cur_prompt = qs
+        # Prepare batch data
+        batch_images = []
+        batch_questions = []
+        batch_metadata = []
+        valid_indices = []
         
-        # Load image
-        if 'image' in line:
-            image_file = line["image"]
-            image_path = os.path.join(args.image_folder, image_file)
-            try:
-                image = Image.open(image_path).convert('RGB')
-            except Exception as e:
-                print(f"Error loading image {image_path}: {e}")
-                continue
-        else:
-            print(f"No image for question {idx}, skipping")
+        for i, line in enumerate(batch_items):
+            idx = line["id"]
+            qa_type = line.get("qa_type", "unknown")
+            answer = line.get("answer", line.get("gt_ans", ""))
+            image_type = line.get("image_type", "unknown")
+            
+            qs = line.get("question", "")
+            qs = qs.replace('<image>', '').strip()
+            
+            if 'image' in line:
+                image_file = line["image"]
+                image_path = os.path.join(args.image_folder, image_file)
+                try:
+                    image = Image.open(image_path).convert('RGB')
+                    batch_images.append(image)
+                    batch_questions.append(qs)
+                    batch_metadata.append({
+                        "id": idx,
+                        "qa_type": qa_type,
+                        "image_type": image_type,
+                        "question": qs,
+                        "gt_ans": answer,
+                    })
+                    valid_indices.append(i)
+                except Exception as e:
+                    print(f"Error loading image {image_path}: {e}")
+                    continue
+        
+        if not batch_images:
             continue
         
-        # Run inference
+        # Run batch inference
         try:
-            outputs = run_inference(
-                model, processor, image, qs,
-                temperature=args.temperature,
-                max_new_tokens=args.max_new_tokens
-            )
+            if len(batch_images) == 1:
+                # Single item - use single inference
+                responses = [run_inference_single(
+                    model, processor, batch_images[0], batch_questions[0],
+                    temperature=args.temperature,
+                    max_new_tokens=args.max_new_tokens
+                )]
+            else:
+                # Batch inference
+                responses = run_inference_batch(
+                    model, processor, batch_images, batch_questions,
+                    temperature=args.temperature,
+                    max_new_tokens=args.max_new_tokens
+                )
         except Exception as e:
-            print(f"Error on question {idx}: {e}")
-            outputs = f"ERROR: {str(e)}"
+            print(f"Batch inference failed, falling back to single: {e}")
+            # Fallback to single inference
+            responses = []
+            for img, q in zip(batch_images, batch_questions):
+                try:
+                    resp = run_inference_single(
+                        model, processor, img, q,
+                        temperature=args.temperature,
+                        max_new_tokens=args.max_new_tokens
+                    )
+                    responses.append(resp)
+                except Exception as e2:
+                    print(f"Single inference error: {e2}")
+                    responses.append(f"ERROR: {str(e2)}")
         
-        # Write result (matching original format)
-        ans_file.write(json.dumps({
-            "id": idx,
-            "qa_type": qa_type,
-            "image_type": image_type,
-            "question": cur_prompt,
-            "gt_ans": answer,
-            "response": outputs
-        }) + "\n")
-        ans_file.flush()
+        # Write results
+        for metadata, response in zip(batch_metadata, responses):
+            metadata["response"] = response
+            ans_file.write(json.dumps(metadata) + "\n")
+            ans_file.flush()
     
     ans_file.close()
 
@@ -209,10 +288,12 @@ if __name__ == "__main__":
                         help="Sampling temperature")
     parser.add_argument("--max-new-tokens", type=int, default=1024,
                         help="Maximum new tokens to generate")
-    parser.add_argument("--load-8bit", action="store_true", default=True,
+    parser.add_argument("--batch-size", type=int, default=4,
+                        help="Batch size for inference")
+    parser.add_argument("--load-8bit", action="store_true", default=False,
                         help="Load model in 8-bit quantization")
-    parser.add_argument("--no-8bit", action="store_false", dest="load_8bit",
-                        help="Disable 8-bit quantization")
+    parser.add_argument("--no-8bit", action="store_true", default=False,
+                        help="Disable 8-bit quantization (use fp16)")
     
     # Keep these for compatibility (ignored)
     parser.add_argument("--mm-projector", type=str, default=None)

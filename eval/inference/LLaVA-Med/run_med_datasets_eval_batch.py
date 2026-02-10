@@ -32,7 +32,12 @@ def parse_args():
     parser.add_argument("--chunk-idx", type=int, default=0)
     parser.add_argument("--temperature", type=float, default=0.7)
     parser.add_argument("--max-new-tokens", type=int, default=1024)
-    parser.add_argument("--load-8bit", action="store_true", default=True)
+    parser.add_argument("--batch-size", type=int, default=4,
+                        help="Batch size for inference")
+    parser.add_argument("--load-8bit", action="store_true", default=False,
+                        help="Load model in 8-bit quantization")
+    parser.add_argument("--no-8bit", action="store_true", default=False,
+                        help="Disable 8-bit quantization (use fp16)")
     
     # Kept for compatibility
     parser.add_argument("--mm-projector", type=str, default=None)
@@ -60,6 +65,7 @@ def run_job(chunk_idx, args):
         "--chunk-idx {chunk_idx} "
         "--temperature {temperature} "
         "--max-new-tokens {max_new_tokens} "
+        "--batch-size {batch_size} "
     ).format(
         chunk_idx=chunk_idx,
         model_vqa_script=model_vqa_script,
@@ -70,10 +76,14 @@ def run_job(chunk_idx, args):
         experiment_name_with_split=args.experiment_name_with_split,
         temperature=args.temperature,
         max_new_tokens=args.max_new_tokens,
+        batch_size=args.batch_size,
     )
     
     if args.load_8bit:
         cmd += "--load-8bit "
+    
+    if args.no_8bit:
+        cmd += "--no-8bit "
     
     print(f"Running chunk {chunk_idx}:")
     print(cmd)
