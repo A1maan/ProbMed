@@ -1,12 +1,12 @@
 #!/bin/bash
-# VCD Margin Analysis Pipeline
-# ============================
+# VCD Margin Analysis Pipeline (Multi-GPU)
+# =========================================
 #
 # Usage:
 #   ./run_vcd_analysis.sh
 #
 # This script:
-# 1. Computes margin scores for 30% of the data
+# 1. Computes margin scores using multiple GPUs
 # 2. Analyzes and plots the results
 
 set -e
@@ -14,12 +14,12 @@ set -e
 # ============================================
 # CONFIGURATION
 # ============================================
-# Change these lines in run_vcd_analysis.sh:
 QUESTION_FILE="/workspace/ProbMed-Dataset/test/test.json"
 IMAGE_FOLDER="/workspace/ProbMed-Dataset/test/"
 OUTPUT_DIR="./results/vcd_analysis"
-SAMPLE_RATIO=0.3  # Use 30% of data for experimentation
+SAMPLE_RATIO=1.0  # Use 30% of data for experimentation
 DOWNSAMPLE_SCALE=0.5  # 50% downsampling
+NUM_GPUS=4  # Number of GPUs to use
 
 # ============================================
 # Install dependencies
@@ -33,19 +33,20 @@ pip install -q transformers accelerate bitsandbytes pillow tqdm matplotlib sciki
 mkdir -p ${OUTPUT_DIR}
 
 # ============================================
-# Step 1: Compute margin scores
+# Step 1: Compute margin scores (Multi-GPU)
 # ============================================
 echo ""
 echo "=========================================="
-echo "Step 1: Computing VCD margin scores"
+echo "Step 1: Computing VCD margin scores (${NUM_GPUS} GPUs)"
 echo "=========================================="
 
-python vcd_margin_analysis.py \
+python run_vcd_analysis_batch.py \
     --question-file ${QUESTION_FILE} \
     --image-folder ${IMAGE_FOLDER} \
     --output-file ${OUTPUT_DIR}/margin_scores.json \
     --sample-ratio ${SAMPLE_RATIO} \
     --downsample-scale ${DOWNSAMPLE_SCALE} \
+    --num-chunks ${NUM_GPUS} \
     --load-8bit
 
 # ============================================
