@@ -1,6 +1,6 @@
 """
-VCD Margin Score Analysis for ProbMed
-=====================================
+VCD Margin Score Analysis for ProbMed (Multi-GPU Support)
+==========================================================
 
 Computes margin scores to detect hallucinations:
 g = [log p(Yes|v,q) - log p(Yes|v',q)] - [log p(No|v,q) - log p(No|v',q)]
@@ -8,11 +8,20 @@ g = [log p(Yes|v,q) - log p(Yes|v',q)] - [log p(No|v,q) - log p(No|v',q)]
 - Large g → visually grounded (genuine)
 - Small g → model prior bias (hallucinated)
 
-Usage:
+Single GPU usage:
     python vcd_margin_analysis.py \
         --question-file /path/to/probmed.json \
         --image-folder /path/to/images \
         --output-file results/margin_scores.json \
+        --sample-ratio 0.3
+
+Multi-GPU usage (called by run_vcd_analysis_batch.py):
+    CUDA_VISIBLE_DEVICES=0 python vcd_margin_analysis.py \
+        --question-file /path/to/probmed.json \
+        --image-folder /path/to/images \
+        --output-file results/margin_scores-chunk0.json \
+        --num-chunks 4 \
+        --chunk-idx 0 \
         --sample-ratio 0.3
 """
 
@@ -20,11 +29,24 @@ import argparse
 import json
 import os
 import random
+import math
 import torch
 import torch.nn.functional as F
 from PIL import Image
 from tqdm import tqdm
 from transformers import LlavaForConditionalGeneration, AutoProcessor, BitsAndBytesConfig
+
+
+def split_list(lst, n):
+    """Split a list into n (roughly) equal-sized chunks"""
+    chunk_size = math.ceil(len(lst) / n)
+    return [lst[i:i+chunk_size] for i in range(0, len(lst), chunk_size)]
+
+
+def get_chunk(lst, n, k):
+    """Get chunk k out of n chunks"""
+    chunks = split_list(lst, n)
+    return chunks[k] if k < len(chunks) else []
 
 
 class VCDMarginAnalyzer:
@@ -193,12 +215,20 @@ def run_analysis(args):
     data = filter_yes_no_questions(data)
     print(f"Found {len(data)} yes/no questions")
     
-    # Sample if needed
+    # Sample if needed (do this BEFORE chunking for consistency)
     if args.sample_ratio < 1.0:
         sample_size = int(len(data) * args.sample_ratio)
         random.seed(args.seed)
         data = random.sample(data, sample_size)
         print(f"Sampled {len(data)} questions ({args.sample_ratio*100:.0f}%)")
+    
+    # Get this chunk's portion
+    data = get_chunk(data, args.num_chunks, args.chunk_idx)
+    print(f"Chunk {args.chunk_idx}/{args.num_chunks}: processing {len(data)} questions")
+    
+    if len(data) == 0:
+        print("No data in this chunk, exiting.")
+        return []
     
     # Initialize analyzer
     analyzer = VCDMarginAnalyzer(
@@ -275,6 +305,10 @@ def main():
                         help="Load model in 8-bit")
     parser.add_argument("--seed", type=int, default=42,
                         help="Random seed for sampling")
+    parser.add_argument("--num-chunks", type=int, default=1,
+                        help="Number of chunks for parallel processing")
+    parser.add_argument("--chunk-idx", type=int, default=0,
+                        help="Which chunk to process (0-indexed)")
     
     args = parser.parse_args()
     

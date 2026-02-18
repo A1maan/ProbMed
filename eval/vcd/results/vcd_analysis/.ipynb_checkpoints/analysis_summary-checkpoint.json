@@ -1,0 +1,19 @@
+{
+  "total_samples": 57132,
+  "gt_yes_count": 28003,
+  "gt_no_count": 29129,
+  "correct_count": 37290,
+  "incorrect_count": 19842,
+  "accuracy": 65.26990128124343,
+  "margin_stats": {
+    "gt_yes_mean": 0.043672866720482865,
+    "gt_yes_std": 0.2661353171018401,
+    "gt_no_mean": -0.01790315334114856,
+    "gt_no_std": 0.30221914473053313,
+    "correct_mean": 0.02131273684472237,
+    "incorrect_mean": -0.004701220836625946
+  },
+  "auc_roc": 0.5549899101493379,
+  "average_precision": 0.534356127813018,
+  "optimal_threshold": 0.0781402587890625
+}
