@@ -14,6 +14,7 @@ set -e
 # CONFIGURATION
 # ============================================
 MARGIN_SCORES_FILE="../vcd/results/vcd_analysis/margin_scores.json"
+TEST_FILE="/workspace/ProbMed-Dataset/test/test.json"
 IMAGE_FOLDER="/workspace/ProbMed-Dataset/test/"
 OUTPUT_DIR_ATTENTION="./results/attention_analysis"
 OUTPUT_DIR_PROBING="./results/representation_probing"
@@ -43,6 +44,7 @@ echo "=========================================="
 
 python run_attention_batch.py \
     --margin-scores-file ${MARGIN_SCORES_FILE} \
+    --test-file ${TEST_FILE} \
     --image-folder ${IMAGE_FOLDER} \
     --output-dir ${OUTPUT_DIR_ATTENTION} \
     --num-chunks ${NUM_GPUS} \
@@ -58,6 +60,7 @@ echo "=========================================="
 
 python representation_probing.py \
     --margin-scores-file ${MARGIN_SCORES_FILE} \
+    --test-file ${TEST_FILE} \
     --image-folder ${IMAGE_FOLDER} \
     --output-dir ${OUTPUT_DIR_PROBING} \
     --num-samples ${NUM_SAMPLES} \

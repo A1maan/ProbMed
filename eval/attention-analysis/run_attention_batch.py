@@ -41,8 +41,11 @@ def run_chunk(chunk_idx, args):
         f"--seed {args.seed + chunk_idx} "
     )
     
+    if args.test_file:
+        cmd += f"--test-file {args.test_file} "
+    
     if args.num_pairs:
-        cmd += f"--num-pairs {args.pairs_per_chunk} "
+        cmd += f"--num-pairs {args.num_pairs} "
     
     if args.load_8bit:
         cmd += "--load-8bit "
@@ -93,6 +96,8 @@ def main():
                         default="chaoyinshe/llava-med-v1.5-mistral-7b-hf")
     parser.add_argument("--margin-scores-file", type=str, required=True,
                         help="Path to margin_scores.json from VCD experiment")
+    parser.add_argument("--test-file", type=str, default=None,
+                        help="Path to original test.json (to get image paths)")
     parser.add_argument("--image-folder", type=str, required=True,
                         help="Path to image folder")
     parser.add_argument("--output-dir", type=str, default="results/attention_analysis",
