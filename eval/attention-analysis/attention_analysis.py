@@ -65,12 +65,14 @@ class AttentionAnalyzer:
                 quantization_config=quantization_config,
                 device_map="auto",
                 torch_dtype=torch.float16,
+                attn_implementation="eager",  # Required for output_attentions=True
             )
         else:
             self.model = LlavaForConditionalGeneration.from_pretrained(
                 model_name,
                 device_map="auto",
                 torch_dtype=torch.float16,
+                attn_implementation="eager",  # Required for output_attentions=True
             )
         
         self.processor = AutoProcessor.from_pretrained(model_name)
@@ -85,7 +87,12 @@ class AttentionAnalyzer:
         self.num_layers = self.model.config.text_config.num_hidden_layers
         self.num_heads = self.model.config.text_config.num_attention_heads
         
+        # Image tokens: LLaVA uses 24x24 = 576 patches
+        self.image_grid_size = 24
+        self.num_image_tokens = self.image_grid_size ** 2
+        
         print(f"Model loaded! Layers: {self.num_layers}, Heads: {self.num_heads}")
+        print(f"Image grid: {self.image_grid_size}x{self.image_grid_size} = {self.num_image_tokens} tokens")
     
     @property
     def device(self):
@@ -103,6 +110,23 @@ class AttentionAnalyzer:
             }
         ]
         return self.processor.apply_chat_template(conversation, add_generation_prompt=True)
+    
+    def _find_image_token_range(self, input_ids):
+        """
+        Find the start and end positions of image tokens in the sequence.
+        
+        The processor inserts a single <image> placeholder token; the model's
+        multi-modal projector expands it to num_image_tokens patches in-place.
+        """
+        image_token_id = self.processor.tokenizer.convert_tokens_to_ids(
+            self.processor.image_token
+        )
+        positions = (input_ids[0] == image_token_id).nonzero(as_tuple=True)[0]
+        if len(positions) == 0:
+            raise ValueError("No <image> token found in input_ids.")
+        img_start = positions[0].item()
+        img_end = img_start + self.num_image_tokens
+        return img_start, img_end
     
     def get_attention_maps(self, image, question):
         """
@@ -123,6 +147,9 @@ class AttentionAnalyzer:
         
         inputs = {k: v.to(self.device) if hasattr(v, 'to') else v for k, v in inputs.items()}
         
+        # Find image token range BEFORE forward pass (using placeholder position)
+        img_start, img_end = self._find_image_token_range(inputs['input_ids'])
+        
         with torch.inference_mode():
             outputs = self.model(
                 **inputs,
@@ -138,17 +165,14 @@ class AttentionAnalyzer:
         input_ids = inputs['input_ids'][0]
         tokens = self.processor.tokenizer.convert_ids_to_tokens(input_ids)
         
-        # Find image token positions (typically marked by special token or contiguous block)
-        # In LLaVA, image tokens are usually at the beginning after any special tokens
-        seq_len = input_ids.shape[0]
-        
-        # Estimate image token positions (LLaVA typically uses 576 image tokens for 24x24 patches)
-        # This may need adjustment based on actual model config
-        num_image_tokens = 576  # 24x24 patches
+        # Actual sequence length after image tokens are expanded
+        actual_seq_len = attentions[0].shape[-1]
         
         token_info = {
-            'seq_len': seq_len,
-            'num_image_tokens': num_image_tokens,
+            'seq_len': actual_seq_len,
+            'num_image_tokens': self.num_image_tokens,
+            'img_start': img_start,
+            'img_end': img_end,
             'tokens': tokens,
             'input_ids': input_ids.cpu().tolist(),
         }
@@ -169,7 +193,8 @@ class AttentionAnalyzer:
         Returns:
             stats: dict with per-layer attention statistics
         """
-        num_img_tokens = token_info['num_image_tokens']
+        img_start = token_info['img_start']
+        img_end = token_info['img_end']
         seq_len = token_info['seq_len']
         
         stats = {
@@ -186,14 +211,21 @@ class AttentionAnalyzer:
             
             # Last token attending to image tokens
             # (this is where the model looks when generating the answer)
-            last_to_img = attn_avg[-1, :num_img_tokens].mean().item()
-            last_to_text = attn_avg[-1, num_img_tokens:].mean().item()
+            last_to_img = attn_avg[-1, img_start:img_end].mean().item()
             
-            # All text tokens attending to image
-            text_to_img = attn_avg[num_img_tokens:, :num_img_tokens].mean().item()
+            # Last token attending to non-image tokens (text before and after image)
+            text_before = attn_avg[-1, :img_start].mean().item() if img_start > 0 else 0
+            text_after = attn_avg[-1, img_end:].mean().item() if img_end < seq_len else 0
+            last_to_text = (text_before + text_after) / 2 if (img_start > 0 or img_end < seq_len) else 0
+            
+            # All text tokens (after image) attending to image
+            if img_end < seq_len:
+                text_to_img = attn_avg[img_end:, img_start:img_end].mean().item()
+            else:
+                text_to_img = 0
             
             # Image attention entropy (how spread out is attention over image?)
-            img_attn = attn_avg[-1, :num_img_tokens]
+            img_attn = attn_avg[-1, img_start:img_end]
             img_attn_normalized = img_attn / (img_attn.sum() + 1e-10)
             entropy = -(img_attn_normalized * torch.log(img_attn_normalized + 1e-10)).sum().item()
             
@@ -215,12 +247,13 @@ class AttentionAnalyzer:
         return stats
 
 
-def find_paired_questions(margin_scores_file, max_pairs=None, num_chunks=1, chunk_idx=0):
+def find_paired_questions(margin_scores_file, test_file=None, max_pairs=None, num_chunks=1, chunk_idx=0):
     """
     Find pairs of questions on the same image where one is correct and one is wrong.
     
     Args:
         margin_scores_file: Path to margin_scores.json
+        test_file: Path to original test.json (to get image paths)
         max_pairs: Maximum pairs to use (None = all pairs)
         num_chunks: Number of chunks for parallel processing
         chunk_idx: Which chunk to process
@@ -231,21 +264,33 @@ def find_paired_questions(margin_scores_file, max_pairs=None, num_chunks=1, chun
     
     print(f"Total samples: {len(results)}")
     
-    # Group by image (extract image ID from question ID)
+    # Load original test.json to get image paths
+    # Create mapping from (id, question) to image path for accurate matching
+    id_question_to_image = {}
+    if test_file and os.path.exists(test_file):
+        print(f"Loading image paths from: {test_file}")
+        with open(test_file, 'r') as f:
+            test_data = json.load(f)
+        for item in test_data:
+            item_id = item.get('id')
+            question = item.get('question', '').replace('<image>', '').strip()
+            if item_id is not None and 'image' in item:
+                id_question_to_image[(item_id, question)] = item['image']
+        print(f"Loaded {len(id_question_to_image)} question-to-image mappings")
+    
+    # Group by IMAGE PATH (not ID) - this is the fix
     by_image = defaultdict(list)
     for r in results:
-        # ID format varies - try to extract image portion
-        # Common formats: "image_001_q1", "img001_question_1", etc.
-        qid = r.get('id', '')
-        # Try splitting by common delimiters
-        parts = qid.replace('-', '_').split('_')
-        # Use first 2-3 parts as image ID (heuristic)
-        if len(parts) >= 2:
-            img_id = '_'.join(parts[:-1])
-        else:
-            img_id = qid
+        # Match by both id and question to get correct image path
+        key = (r.get('id'), r.get('question', ''))
+        image_path = id_question_to_image.get(key)
         
-        by_image[img_id].append(r)
+        if image_path:
+            r['image'] = image_path
+            by_image[image_path].append(r)
+        else:
+            # Fallback: skip if we can't find image path
+            pass
     
     print(f"Unique images: {len(by_image)}")
     
@@ -284,7 +329,8 @@ def analyze_pairs(args):
     # Find pairs (with chunking support)
     pairs = find_paired_questions(
         args.margin_scores_file, 
-        args.num_pairs,
+        test_file=args.test_file,
+        max_pairs=args.num_pairs,
         num_chunks=args.num_chunks,
         chunk_idx=args.chunk_idx
     )
@@ -479,6 +525,8 @@ def main():
                         default="chaoyinshe/llava-med-v1.5-mistral-7b-hf")
     parser.add_argument("--margin-scores-file", type=str, required=True,
                         help="Path to margin_scores.json from VCD experiment")
+    parser.add_argument("--test-file", type=str, default=None,
+                        help="Path to original test.json (to get image paths)")
     parser.add_argument("--image-folder", type=str, required=True,
                         help="Path to image folder")
     parser.add_argument("--output-dir", type=str, default="results/attention_analysis",

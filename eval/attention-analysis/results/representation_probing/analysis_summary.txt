@@ -1,0 +1,11 @@
+============================================================
+PROBING ANALYSIS RESULTS
+============================================================
+
+Best accuracy: 0.7700 at layer 23
+Best AUC: 0.8719 at layer 31
+
+No significant accuracy drop detected (max: 0.7700, final: 0.7200)
+
+Early layers (0-15) avg accuracy: 0.5994
+Late layers (16-32) avg accuracy: 0.7435

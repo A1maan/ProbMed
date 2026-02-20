@@ -1,17 +1,21 @@
 """
-Layer-wise Representation Probing
-=================================
+Paired Representation Probing
+=============================
 
-Extracts hidden representations from each layer and trains a logistic regression
-classifier to predict correct Yes/No answer. This helps identify if early/mid
-layers have correct information that gets destroyed in later layers.
+Extracts hidden representations from each layer for PAIRED questions
+(same image, one correct, one wrong) and trains logistic regression
+classifiers to predict the ground truth yes/no answer.
+
+This helps identify if early/mid layers have correct information
+that gets destroyed in later layers.
 
 Usage:
-    python representation_probing.py \
+    python paired_representation_probing.py \
         --margin-scores-file ../vcd/results/vcd_analysis/margin_scores.json \
+        --test-file /workspace/ProbMed-Dataset/test/test.json \
         --image-folder /workspace/ProbMed-Dataset/test/ \
-        --output-dir results/representation_probing \
-        --num-samples 500
+        --output-dir results/paired_probing \
+        --num-pairs 500
 """
 
 import argparse
@@ -23,13 +27,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image
 from tqdm import tqdm
+from collections import defaultdict
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, roc_auc_score
 from transformers import LlavaForConditionalGeneration, AutoProcessor, BitsAndBytesConfig
 
 
-class RepresentationExtractor:
+class PairedRepresentationExtractor:
     """Extracts hidden representations from each layer of LLaVA-Med."""
     
     def __init__(self, model_name="chaoyinshe/llava-med-v1.5-mistral-7b-hf", load_8bit=True):
@@ -65,6 +70,10 @@ class RepresentationExtractor:
         self.num_layers = self.model.config.text_config.num_hidden_layers
         self.hidden_size = self.model.config.text_config.hidden_size
         
+        # Yes/No token IDs
+        self.yes_token_id = self.processor.tokenizer.encode("Yes", add_special_tokens=False)[0]
+        self.no_token_id = self.processor.tokenizer.encode("No", add_special_tokens=False)[0]
+        
         print(f"Model loaded! Layers: {self.num_layers}, Hidden size: {self.hidden_size}")
     
     @property
@@ -89,8 +98,9 @@ class RepresentationExtractor:
         Extract hidden representations from all layers.
         
         Returns:
-            representations: list of tensors, one per layer (last token representation)
+            representations: list of numpy arrays, one per layer (last token representation)
             prediction: model's yes/no prediction
+            is_correct: whether prediction matches ground truth
         """
         prompt = self.format_prompt(question)
         
@@ -123,56 +133,92 @@ class RepresentationExtractor:
         
         # Get model prediction
         logits = outputs.logits[:, -1, :]
-        yes_token_id = self.processor.tokenizer.encode("Yes", add_special_tokens=False)[0]
-        no_token_id = self.processor.tokenizer.encode("No", add_special_tokens=False)[0]
-        
-        yes_logit = logits[0, yes_token_id].item()
-        no_logit = logits[0, no_token_id].item()
+        yes_logit = logits[0, self.yes_token_id].item()
+        no_logit = logits[0, self.no_token_id].item()
         prediction = 'yes' if yes_logit > no_logit else 'no'
         
-        return representations, prediction, yes_logit, no_logit
+        return representations, prediction
 
 
-def load_samples(margin_scores_file, num_samples=500):
-    """Load samples from margin scores file."""
-    
-    print(f"Loading samples from: {margin_scores_file}")
+def find_paired_questions(margin_scores_file, test_file, num_pairs=500):
+    """
+    Find pairs of questions on the same image where one is correct and one is wrong.
+    """
+    print(f"Loading margin scores from: {margin_scores_file}")
     with open(margin_scores_file, 'r') as f:
         results = json.load(f)
     
     print(f"Total samples: {len(results)}")
     
-    # Filter samples that have image info
-    valid_samples = [r for r in results if r.get('question') and r.get('gt_ans')]
-    print(f"Valid samples: {len(valid_samples)}")
+    # Load original test.json to get image paths
+    print(f"Loading image paths from: {test_file}")
+    with open(test_file, 'r') as f:
+        test_data = json.load(f)
+    
+    id_question_to_image = {}
+    for item in test_data:
+        item_id = item.get('id')
+        question = item.get('question', '').replace('<image>', '').strip()
+        if item_id is not None and 'image' in item:
+            id_question_to_image[(item_id, question)] = item['image']
+    
+    print(f"Loaded {len(id_question_to_image)} question-to-image mappings")
+    
+    # Group by image path
+    by_image = defaultdict(list)
+    for r in results:
+        key = (r.get('id'), r.get('question', ''))
+        image_path = id_question_to_image.get(key)
+        if image_path:
+            r['image'] = image_path
+            by_image[image_path].append(r)
+    
+    print(f"Unique images: {len(by_image)}")
+    
+    # Find pairs (one correct, one wrong per image)
+    pairs = []
+    for img_path, questions in by_image.items():
+        correct = [q for q in questions if q.get('is_correct', False)]
+        wrong = [q for q in questions if not q.get('is_correct', False)]
+        
+        if correct and wrong:
+            pairs.append({
+                'image_path': img_path,
+                'correct': correct[0],
+                'wrong': wrong[0],
+            })
+    
+    print(f"Found {len(pairs)} valid pairs (images with both correct and wrong)")
     
     # Sample if needed
-    if len(valid_samples) > num_samples:
+    if len(pairs) > num_pairs:
         random.seed(42)
-        valid_samples = random.sample(valid_samples, num_samples)
-        print(f"Sampled {num_samples} samples")
+        pairs = random.sample(pairs, num_pairs)
+        print(f"Sampled {num_pairs} pairs")
     
-    return valid_samples
+    return pairs
 
 
-def extract_all_representations(extractor, samples, image_folder):
-    """Extract representations for all samples."""
+def extract_paired_representations(extractor, pairs, image_folder):
+    """
+    Extract representations for all paired questions.
     
-    # Storage for representations per layer
+    For each pair (same image):
+        - Extract representations for correct question
+        - Extract representations for wrong question
+    """
     num_layers = extractor.num_layers + 1  # +1 for embedding layer
-    layer_representations = [[] for _ in range(num_layers)]
-    labels = []  # Ground truth: 1 for yes, 0 for no
-    sample_info = []
     
-    for sample in tqdm(samples, desc="Extracting representations"):
-        # Get image path
-        image_file = sample.get('image')
-        if not image_file:
-            # Try to reconstruct from the original data
-            # Skip if no image info
-            continue
-        
-        image_path = os.path.join(image_folder, image_file)
+    # Storage: separate lists for correct and wrong questions
+    correct_representations = [[] for _ in range(num_layers)]
+    wrong_representations = [[] for _ in range(num_layers)]
+    correct_labels = []  # Ground truth for correct questions
+    wrong_labels = []    # Ground truth for wrong questions
+    
+    pair_info = []
+    
+    for pair in tqdm(pairs, desc="Extracting paired representations"):
+        image_path = os.path.join(image_folder, pair['image_path'])
         
         if not os.path.exists(image_path):
             continue
@@ -180,75 +226,106 @@ def extract_all_representations(extractor, samples, image_folder):
         try:
             image = Image.open(image_path).convert('RGB')
             
-            representations, pred, yes_logit, no_logit = extractor.extract_layer_representations(
-                image, sample['question']
+            # Extract for CORRECT question
+            repr_correct, pred_correct = extractor.extract_layer_representations(
+                image, pair['correct']['question']
             )
             
-            # Store representations for each layer
-            for layer_idx, repr in enumerate(representations):
-                layer_representations[layer_idx].append(repr)
+            # Extract for WRONG question
+            repr_wrong, pred_wrong = extractor.extract_layer_representations(
+                image, pair['wrong']['question']
+            )
             
-            # Label: what the model SHOULD answer (ground truth)
-            gt_label = 1 if sample['gt_ans'] == 'yes' else 0
-            labels.append(gt_label)
+            # Store representations
+            for layer_idx in range(num_layers):
+                correct_representations[layer_idx].append(repr_correct[layer_idx])
+                wrong_representations[layer_idx].append(repr_wrong[layer_idx])
             
-            sample_info.append({
-                'id': sample.get('id'),
-                'question': sample['question'],
-                'gt_ans': sample['gt_ans'],
-                'model_pred': pred,
-                'is_correct': (pred == sample['gt_ans']),
+            # Store ground truth labels (yes=1, no=0)
+            correct_labels.append(1 if pair['correct']['gt_ans'] == 'yes' else 0)
+            wrong_labels.append(1 if pair['wrong']['gt_ans'] == 'yes' else 0)
+            
+            pair_info.append({
+                'image': pair['image_path'],
+                'correct_q': pair['correct']['question'],
+                'wrong_q': pair['wrong']['question'],
+                'correct_gt': pair['correct']['gt_ans'],
+                'wrong_gt': pair['wrong']['gt_ans'],
+                'correct_pred': pred_correct,
+                'wrong_pred': pred_wrong,
             })
             
             # Clear GPU memory periodically
-            if len(labels) % 50 == 0:
+            if len(correct_labels) % 50 == 0:
                 torch.cuda.empty_cache()
             
         except Exception as e:
-            print(f"Error processing sample: {e}")
+            print(f"Error processing pair: {e}")
             continue
     
     # Convert to numpy arrays
-    layer_representations = [np.array(reps) for reps in layer_representations]
-    labels = np.array(labels)
+    correct_representations = [np.array(reps) for reps in correct_representations]
+    wrong_representations = [np.array(reps) for reps in wrong_representations]
+    correct_labels = np.array(correct_labels)
+    wrong_labels = np.array(wrong_labels)
     
-    print(f"Extracted representations for {len(labels)} samples")
-    print(f"Label distribution: {np.sum(labels)} yes, {len(labels) - np.sum(labels)} no")
+    print(f"\nExtracted representations for {len(correct_labels)} pairs")
+    print(f"Correct questions - Yes: {correct_labels.sum()}, No: {len(correct_labels) - correct_labels.sum()}")
+    print(f"Wrong questions - Yes: {wrong_labels.sum()}, No: {len(wrong_labels) - wrong_labels.sum()}")
     
-    return layer_representations, labels, sample_info
+    return correct_representations, wrong_representations, correct_labels, wrong_labels, pair_info
 
 
-def train_probing_classifiers(layer_representations, labels, test_size=0.2):
+def train_probing_classifiers(correct_reps, wrong_reps, correct_labels, wrong_labels, test_size=0.2):
     """
     Train logistic regression classifier for each layer.
     
-    Returns:
-        results: list of dicts with accuracy and AUC per layer
-    """
+    Trains on COMBINED data from both correct and wrong questions.
+    This tests: "Can layer X predict the ground truth answer?"
     
-    results = []
-    num_layers = len(layer_representations)
+    Returns:
+        results: dict with per-layer metrics for combined, correct-only, and wrong-only
+    """
+    num_layers = len(correct_reps)
+    
+    # Combine correct and wrong for training
+    combined_reps = [np.vstack([correct_reps[i], wrong_reps[i]]) for i in range(num_layers)]
+    combined_labels = np.concatenate([correct_labels, wrong_labels])
+    
+    # Track which samples are from correct vs wrong questions
+    is_correct_question = np.concatenate([
+        np.ones(len(correct_labels)),
+        np.zeros(len(wrong_labels))
+    ])
     
     # Split data
+    indices = np.arange(len(combined_labels))
     train_idx, test_idx = train_test_split(
-        range(len(labels)), 
-        test_size=test_size, 
+        indices,
+        test_size=test_size,
         random_state=42,
-        stratify=labels
+        stratify=combined_labels
     )
     
-    y_train = labels[train_idx]
-    y_test = labels[test_idx]
+    y_train = combined_labels[train_idx]
+    y_test = combined_labels[test_idx]
+    is_correct_test = is_correct_question[test_idx]
     
     print(f"\nTraining probing classifiers...")
     print(f"Train size: {len(train_idx)}, Test size: {len(test_idx)}")
     
+    results = {
+        'per_layer': [],
+        'num_train': len(train_idx),
+        'num_test': len(test_idx),
+    }
+    
     for layer_idx in tqdm(range(num_layers), desc="Training classifiers"):
-        X = layer_representations[layer_idx]
+        X = combined_reps[layer_idx]
         X_train = X[train_idx]
         X_test = X[test_idx]
         
-        # Train logistic regression (re-initialized for each layer)
+        # Train logistic regression
         clf = LogisticRegression(
             max_iter=1000,
             random_state=42,
@@ -259,53 +336,73 @@ def train_probing_classifiers(layer_representations, labels, test_size=0.2):
         try:
             clf.fit(X_train, y_train)
             
-            # Predict
+            # Predictions
             y_pred = clf.predict(X_test)
             y_prob = clf.predict_proba(X_test)[:, 1]
             
-            # Metrics
+            # Overall metrics
             accuracy = accuracy_score(y_test, y_pred)
             auc = roc_auc_score(y_test, y_prob)
             
-            results.append({
+            # Metrics for correct questions only
+            correct_mask = is_correct_test == 1
+            if correct_mask.sum() > 0:
+                acc_correct = accuracy_score(y_test[correct_mask], y_pred[correct_mask])
+            else:
+                acc_correct = 0
+            
+            # Metrics for wrong questions only
+            wrong_mask = is_correct_test == 0
+            if wrong_mask.sum() > 0:
+                acc_wrong = accuracy_score(y_test[wrong_mask], y_pred[wrong_mask])
+            else:
+                acc_wrong = 0
+            
+            results['per_layer'].append({
                 'layer': layer_idx,
                 'accuracy': accuracy,
                 'auc': auc,
+                'accuracy_correct_questions': acc_correct,
+                'accuracy_wrong_questions': acc_wrong,
             })
             
         except Exception as e:
             print(f"Error training layer {layer_idx}: {e}")
-            results.append({
+            results['per_layer'].append({
                 'layer': layer_idx,
                 'accuracy': 0.5,
                 'auc': 0.5,
+                'accuracy_correct_questions': 0.5,
+                'accuracy_wrong_questions': 0.5,
             })
     
     return results
 
 
 def plot_layer_accuracy(results, output_dir):
-    """Plot accuracy and AUC per layer."""
+    """Plot accuracy and AUC per layer with correct vs wrong breakdown."""
     
-    layers = [r['layer'] for r in results]
-    accuracies = [r['accuracy'] for r in results]
-    aucs = [r['auc'] for r in results]
+    layers = [r['layer'] for r in results['per_layer']]
+    accuracies = [r['accuracy'] for r in results['per_layer']]
+    aucs = [r['auc'] for r in results['per_layer']]
+    acc_correct = [r['accuracy_correct_questions'] for r in results['per_layer']]
+    acc_wrong = [r['accuracy_wrong_questions'] for r in results['per_layer']]
     
-    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+    fig, axes = plt.subplots(2, 2, figsize=(14, 10))
     
-    # Accuracy plot
-    ax1 = axes[0]
-    ax1.plot(layers, accuracies, 'b-o', markersize=4)
+    # 1. Overall accuracy
+    ax1 = axes[0, 0]
+    ax1.plot(layers, accuracies, 'b-o', markersize=4, label='Overall')
     ax1.axhline(y=0.5, color='red', linestyle='--', label='Random baseline')
     ax1.set_xlabel('Layer', fontsize=12)
     ax1.set_ylabel('Accuracy', fontsize=12)
-    ax1.set_title('Probing Accuracy per Layer', fontsize=14)
+    ax1.set_title('Probing Accuracy per Layer (Combined)', fontsize=14)
     ax1.legend()
     ax1.grid(True, alpha=0.3)
     ax1.set_ylim([0.4, 1.0])
     
-    # AUC plot
-    ax2 = axes[1]
+    # 2. AUC
+    ax2 = axes[0, 1]
     ax2.plot(layers, aucs, 'g-o', markersize=4)
     ax2.axhline(y=0.5, color='red', linestyle='--', label='Random baseline')
     ax2.set_xlabel('Layer', fontsize=12)
@@ -315,103 +412,109 @@ def plot_layer_accuracy(results, output_dir):
     ax2.grid(True, alpha=0.3)
     ax2.set_ylim([0.4, 1.0])
     
+    # 3. Correct vs Wrong questions accuracy
+    ax3 = axes[1, 0]
+    ax3.plot(layers, acc_correct, 'g-o', markersize=4, label='Correct questions')
+    ax3.plot(layers, acc_wrong, 'r-o', markersize=4, label='Wrong questions')
+    ax3.axhline(y=0.5, color='gray', linestyle='--', alpha=0.5)
+    ax3.set_xlabel('Layer', fontsize=12)
+    ax3.set_ylabel('Accuracy', fontsize=12)
+    ax3.set_title('Probing Accuracy: Correct vs Wrong Questions', fontsize=14)
+    ax3.legend()
+    ax3.grid(True, alpha=0.3)
+    ax3.set_ylim([0.4, 1.0])
+    
+    # 4. Difference (Correct - Wrong)
+    ax4 = axes[1, 1]
+    diff = [c - w for c, w in zip(acc_correct, acc_wrong)]
+    colors = ['green' if d > 0 else 'red' for d in diff]
+    ax4.bar(layers, diff, color=colors, alpha=0.7)
+    ax4.axhline(y=0, color='black', linestyle='-', linewidth=0.5)
+    ax4.set_xlabel('Layer', fontsize=12)
+    ax4.set_ylabel('Accuracy Difference', fontsize=12)
+    ax4.set_title('Accuracy Difference (Correct - Wrong Questions)', fontsize=14)
+    ax4.grid(True, alpha=0.3, axis='y')
+    
     plt.tight_layout()
     
-    plot_path = os.path.join(output_dir, 'layer_probing_accuracy.png')
+    plot_path = os.path.join(output_dir, 'paired_probing_accuracy.png')
     plt.savefig(plot_path, dpi=150, bbox_inches='tight')
     print(f"Saved plot to: {plot_path}")
     
-    plt.show()
+    plt.close()
     
-    # Also create a bar chart
-    fig2, ax = plt.subplots(figsize=(14, 6))
-    
-    x = np.arange(len(layers))
-    width = 0.35
-    
-    bars1 = ax.bar(x - width/2, accuracies, width, label='Accuracy', color='steelblue')
-    bars2 = ax.bar(x + width/2, aucs, width, label='AUC', color='forestgreen')
-    
-    ax.axhline(y=0.5, color='red', linestyle='--', alpha=0.7, label='Random')
-    ax.set_xlabel('Layer', fontsize=12)
-    ax.set_ylabel('Score', fontsize=12)
-    ax.set_title('Layer-wise Probing Performance', fontsize=14)
-    ax.set_xticks(x[::2])  # Show every other layer for readability
-    ax.set_xticklabels([str(l) for l in layers[::2]])
-    ax.legend()
-    ax.grid(True, alpha=0.3, axis='y')
-    ax.set_ylim([0.4, 1.0])
-    
-    plt.tight_layout()
-    
-    bar_path = os.path.join(output_dir, 'layer_probing_bars.png')
-    plt.savefig(bar_path, dpi=150, bbox_inches='tight')
-    print(f"Saved bar plot to: {bar_path}")
-    
-    return fig, fig2
+    return fig
 
 
 def analyze_results(results):
     """Analyze probing results to find insights."""
     
-    accuracies = [r['accuracy'] for r in results]
-    aucs = [r['auc'] for r in results]
+    per_layer = results['per_layer']
+    accuracies = [r['accuracy'] for r in per_layer]
+    acc_correct = [r['accuracy_correct_questions'] for r in per_layer]
+    acc_wrong = [r['accuracy_wrong_questions'] for r in per_layer]
     
     print("\n" + "=" * 60)
-    print("PROBING ANALYSIS RESULTS")
+    print("PAIRED PROBING ANALYSIS RESULTS")
     print("=" * 60)
     
     # Find best layer
-    best_acc_layer = np.argmax(accuracies)
-    best_auc_layer = np.argmax(aucs)
+    best_layer = int(np.argmax(accuracies))
+    best_acc = accuracies[best_layer]
     
-    print(f"\nBest accuracy: {accuracies[best_acc_layer]:.4f} at layer {best_acc_layer}")
-    print(f"Best AUC: {aucs[best_auc_layer]:.4f} at layer {best_auc_layer}")
+    print(f"\nBest overall accuracy: {best_acc:.4f} at layer {best_layer}")
+    print(f"Final layer accuracy: {accuracies[-1]:.4f}")
     
     # Check for accuracy drop
-    max_acc = max(accuracies)
-    final_acc = accuracies[-1]
-    
-    if max_acc > final_acc + 0.05:
-        print(f"\n⚠️  FINDING: Accuracy drops from {max_acc:.4f} (layer {np.argmax(accuracies)}) "
-              f"to {final_acc:.4f} (final layer)")
-        print("   This suggests correct information exists in early/mid layers but gets corrupted later!")
+    if best_acc > accuracies[-1] + 0.05:
+        print(f"\n⚠️  FINDING: Accuracy drops from {best_acc:.4f} (layer {best_layer}) "
+              f"to {accuracies[-1]:.4f} (final layer)")
+        print("   This suggests correct information exists in earlier layers but gets corrupted!")
     else:
-        print(f"\n✓ No significant accuracy drop detected (max: {max_acc:.4f}, final: {final_acc:.4f})")
+        print(f"\n✓ No significant accuracy drop detected")
     
-    # Check early vs late layers
-    mid_point = len(results) // 2
-    early_avg = np.mean(accuracies[:mid_point])
-    late_avg = np.mean(accuracies[mid_point:])
+    # Compare correct vs wrong questions
+    avg_diff = np.mean([c - w for c, w in zip(acc_correct, acc_wrong)])
+    print(f"\nAverage accuracy difference (correct - wrong): {avg_diff:.4f}")
     
-    print(f"\nEarly layers (0-{mid_point-1}) avg accuracy: {early_avg:.4f}")
-    print(f"Late layers ({mid_point}-{len(results)-1}) avg accuracy: {late_avg:.4f}")
+    if avg_diff > 0.05:
+        print("   → Model representations are more predictive for correctly answered questions")
+    elif avg_diff < -0.05:
+        print("   → Model representations are more predictive for wrongly answered questions (unexpected!)")
+    else:
+        print("   → Similar predictive power for both question types")
+    
+    # Find divergence layer
+    diffs = [c - w for c, w in zip(acc_correct, acc_wrong)]
+    max_diff_layer = int(np.argmax(np.abs(diffs)))
+    print(f"\nLargest divergence at layer {max_diff_layer}: {diffs[max_diff_layer]:.4f}")
     
     return {
-        'best_acc_layer': best_acc_layer,
-        'best_acc': accuracies[best_acc_layer],
-        'best_auc_layer': best_auc_layer,
-        'best_auc': aucs[best_auc_layer],
-        'final_acc': final_acc,
-        'early_avg': early_avg,
-        'late_avg': late_avg,
-        'accuracy_drop': max_acc - final_acc,
+        'best_layer': best_layer,
+        'best_accuracy': float(best_acc),
+        'final_accuracy': float(accuracies[-1]),
+        'accuracy_drop': float(best_acc - accuracies[-1]),
+        'avg_correct_wrong_diff': float(avg_diff),
+        'max_divergence_layer': max_diff_layer,
+        'max_divergence': float(diffs[max_diff_layer]),
     }
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Layer-wise Representation Probing')
+    parser = argparse.ArgumentParser(description='Paired Layer-wise Representation Probing')
     
     parser.add_argument("--model-name", type=str,
                         default="chaoyinshe/llava-med-v1.5-mistral-7b-hf")
     parser.add_argument("--margin-scores-file", type=str, required=True,
                         help="Path to margin_scores.json from VCD experiment")
+    parser.add_argument("--test-file", type=str, required=True,
+                        help="Path to test.json (for image paths)")
     parser.add_argument("--image-folder", type=str, required=True,
                         help="Path to image folder")
-    parser.add_argument("--output-dir", type=str, default="results/representation_probing",
+    parser.add_argument("--output-dir", type=str, default="results/paired_probing",
                         help="Output directory")
-    parser.add_argument("--num-samples", type=int, default=500,
-                        help="Number of samples to use")
+    parser.add_argument("--num-pairs", type=int, default=500,
+                        help="Number of pairs to use")
     parser.add_argument("--load-8bit", action="store_true", default=True,
                         help="Load model in 8-bit")
     parser.add_argument("--seed", type=int, default=42,
@@ -425,30 +528,36 @@ def main():
     # Create output directory
     os.makedirs(args.output_dir, exist_ok=True)
     
-    # Load samples
-    samples = load_samples(args.margin_scores_file, args.num_samples)
+    # Find paired questions
+    pairs = find_paired_questions(
+        args.margin_scores_file,
+        args.test_file,
+        args.num_pairs
+    )
     
-    if not samples:
-        print("No samples found!")
+    if not pairs:
+        print("No pairs found!")
         return
     
     # Initialize extractor
-    extractor = RepresentationExtractor(
+    extractor = PairedRepresentationExtractor(
         model_name=args.model_name,
         load_8bit=args.load_8bit
     )
     
-    # Extract representations
-    layer_representations, labels, sample_info = extract_all_representations(
-        extractor, samples, args.image_folder
+    # Extract representations for pairs
+    correct_reps, wrong_reps, correct_labels, wrong_labels, pair_info = extract_paired_representations(
+        extractor, pairs, args.image_folder
     )
     
-    if len(labels) < 50:
-        print("Not enough samples extracted!")
+    if len(correct_labels) < 50:
+        print("Not enough pairs extracted!")
         return
     
     # Train probing classifiers
-    probing_results = train_probing_classifiers(layer_representations, labels)
+    probing_results = train_probing_classifiers(
+        correct_reps, wrong_reps, correct_labels, wrong_labels
+    )
     
     # Save results
     output_file = os.path.join(args.output_dir, 'probing_results.json')
@@ -466,6 +575,7 @@ def main():
     analysis_file = os.path.join(args.output_dir, 'analysis_summary.json')
     with open(analysis_file, 'w') as f:
         json.dump(analysis, f, indent=2)
+    print(f"Saved analysis to: {analysis_file}")
     
     print("\nDone!")
 
