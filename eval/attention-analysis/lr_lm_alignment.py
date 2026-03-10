@@ -73,7 +73,7 @@ def extract_lm_head_direction(model_name, load_8bit=True):
     print(f"  Yes token ID: {yes_token_id}")
     print(f"  No token ID: {no_token_id}")
     
-    lm_head = model.language_model.lm_head
+    lm_head = model.lm_head
     
     with torch.no_grad():
         w_yes = lm_head.weight[yes_token_id].cpu().float().numpy()
@@ -157,7 +157,7 @@ def plot_lm_head_alignment(alignments, output_dir, show_stats=True):
     ax.grid(True, alpha=0.3)
     
     ax.annotate(
-        f'Peak: {max_val:.4f}\\nat layer {max_idx}',
+        f'Peak: {max_val:.4f}\nat layer {max_idx}',
         xy=(max_idx, max_val),
         xytext=(max_idx + len(layers)*0.05, max_val + 0.05),
         fontsize=11,
@@ -166,10 +166,10 @@ def plot_lm_head_alignment(alignments, output_dir, show_stats=True):
     )
     
     if show_stats:
-        stats_text = f'Statistics:\\n'
-        stats_text += f'Max: {max_val:.4f} (layer {max_idx})\\n'
-        stats_text += f'Final: {final_val:.4f}\\n'
-        stats_text += f'Mean: {np.mean(alignments):.4f}\\n'
+        stats_text = f'Statistics:\n'
+        stats_text += f'Max: {max_val:.4f} (layer {max_idx})\n'
+        stats_text += f'Final: {final_val:.4f}\n'
+        stats_text += f'Mean: {np.mean(alignments):.4f}\n'
         stats_text += f'Std: {np.std(alignments):.4f}'
         
         ax.text(
@@ -218,22 +218,22 @@ def analyze_alignment_patterns(alignments):
     else:
         growth_rate = 0
     
-    print("\\n" + "=" * 60)
+    print("\n" + "=" * 60)
     print("ALIGNMENT ANALYSIS")
     print("=" * 60)
     
-    print(f"\\nPeak alignment: {max_val:.4f} at layer {max_idx}")
+    print(f"\nPeak alignment: {max_val:.4f} at layer {max_idx}")
     print(f"Final layer alignment: {final_val:.4f}")
     print(f"Mean alignment: {np.mean(alignments):.4f}")
     print(f"Std alignment: {np.std(alignments):.4f}")
     
     if first_positive is not None:
-        print(f"\\nFirst positive alignment at layer: {first_positive}")
+        print(f"\nFirst positive alignment at layer: {first_positive}")
         print(f"Alignment growth rate: {growth_rate:.6f} per layer")
     else:
         print("\nWARNING: No positive alignment found in any layer!")
     
-    print(f"\\nMonotonicity: {increasing_ratio*100:.1f}% of layer transitions are increasing")
+    print(f"\nMonotonicity: {increasing_ratio*100:.1f}% of layer transitions are increasing")
     
     if increasing_ratio > 0.7:
         print("  Alignment generally increases across layers")
@@ -300,9 +300,9 @@ def main():
     output_file = os.path.join(args.output_dir, 'lm_alignment_analysis.json')
     with open(output_file, 'w') as f:
         json.dump(analysis, f, indent=2)
-    print(f"\\nSaved alignment analysis to: {output_file}")
+    print(f"\nSaved alignment analysis to: {output_file}")
     
-    print("\\nDone!")
+    print("\nDone!")
 
 
 if __name__ == "__main__":

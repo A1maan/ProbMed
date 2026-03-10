@@ -18,7 +18,7 @@ TEST_FILE="/workspace/ProbMed-Dataset/test/test.json"
 IMAGE_FOLDER="/workspace/ProbMed-Dataset/test/"
 OUTPUT_DIR_ATTENTION="./results/attention_analysis"
 OUTPUT_DIR_PROBING="./results/representation_probing"
-NUM_SAMPLES=500     # Number of samples for representation probing
+NUM_PAIRS=500       # Number of paired samples for representation probing
 NUM_GPUS=4          # Number of GPUs to use
 # Note: Attention analysis processes ALL valid pairs by default
 
@@ -55,7 +55,7 @@ python run_attention_batch.py \
 # ============================================
 echo ""
 echo "=========================================="
-echo "Step 2: Representation Probing (${NUM_SAMPLES} samples)"
+echo "Step 2: Representation Probing (${NUM_PAIRS} pairs)"
 echo "=========================================="
 
 python representation_probing.py \
@@ -63,7 +63,20 @@ python representation_probing.py \
     --test-file ${TEST_FILE} \
     --image-folder ${IMAGE_FOLDER} \
     --output-dir ${OUTPUT_DIR_PROBING} \
-    --num-samples ${NUM_SAMPLES} \
+    --num-pairs ${NUM_PAIRS} \
+    --load-8bit
+
+# ============================================
+# Step 3: LR-LM Alignment Analysis
+# ============================================
+echo ""
+echo "=========================================="
+echo "Step 3: LR-LM Alignment Analysis"
+echo "=========================================="
+
+python lr_lm_alignment.py \
+    --weights-file ${OUTPUT_DIR_PROBING}/lr_weights.npz \
+    --output-dir ${OUTPUT_DIR_PROBING} \
     --load-8bit
 
 echo ""
@@ -71,4 +84,5 @@ echo "=========================================="
 echo "DONE!"
 echo "Attention results: ${OUTPUT_DIR_ATTENTION}"
 echo "Probing results: ${OUTPUT_DIR_PROBING}"
+echo "Alignment results: ${OUTPUT_DIR_PROBING}/lm_alignment_analysis.json"
 echo "=========================================="
