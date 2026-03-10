@@ -1,30 +1,3 @@
-"""
-VCD Margin Score Analysis for ProbMed (Multi-GPU Support)
-==========================================================
-
-Computes margin scores to detect hallucinations:
-g = [log p(Yes|v,q) - log p(Yes|v',q)] - [log p(No|v,q) - log p(No|v',q)]
-
-- Large g → visually grounded (genuine)
-- Small g → model prior bias (hallucinated)
-
-Single GPU usage:
-    python vcd_margin_analysis.py \
-        --question-file /path/to/probmed.json \
-        --image-folder /path/to/images \
-        --output-file results/margin_scores.json \
-        --sample-ratio 0.3
-
-Multi-GPU usage (called by run_vcd_analysis_batch.py):
-    CUDA_VISIBLE_DEVICES=0 python vcd_margin_analysis.py \
-        --question-file /path/to/probmed.json \
-        --image-folder /path/to/images \
-        --output-file results/margin_scores-chunk0.json \
-        --num-chunks 4 \
-        --chunk-idx 0 \
-        --sample-ratio 0.3
-"""
-
 import argparse
 import json
 import os

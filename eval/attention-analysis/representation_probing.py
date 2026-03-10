@@ -1,23 +1,3 @@
-"""
-Paired Representation Probing
-=============================
-
-Extracts hidden representations from each layer for PAIRED questions
-(same image, one correct, one wrong) and trains logistic regression
-classifiers to predict the ground truth yes/no answer.
-
-This helps identify if early/mid layers have correct information
-that gets destroyed in later layers.
-
-Usage:
-    python paired_representation_probing.py \
-        --margin-scores-file ../vcd/results/vcd_analysis/margin_scores.json \
-        --test-file /workspace/ProbMed-Dataset/test/test.json \
-        --image-folder /workspace/ProbMed-Dataset/test/ \
-        --output-dir results/paired_probing \
-        --num-pairs 500
-"""
-
 import argparse
 import json
 import os
@@ -285,6 +265,7 @@ def train_probing_classifiers(correct_reps, wrong_reps, correct_labels, wrong_la
     
     Returns:
         results: dict with per-layer metrics for combined, correct-only, and wrong-only
+        classifiers: list of trained LogisticRegression classifiers, one per layer
     """
     num_layers = len(correct_reps)
     
@@ -319,6 +300,7 @@ def train_probing_classifiers(correct_reps, wrong_reps, correct_labels, wrong_la
         'num_train': len(train_idx),
         'num_test': len(test_idx),
     }
+    classifiers = []
     
     for layer_idx in tqdm(range(num_layers), desc="Training classifiers"):
         X = combined_reps[layer_idx]
@@ -365,6 +347,7 @@ def train_probing_classifiers(correct_reps, wrong_reps, correct_labels, wrong_la
                 'accuracy_correct_questions': acc_correct,
                 'accuracy_wrong_questions': acc_wrong,
             })
+            classifiers.append(clf)
             
         except Exception as e:
             print(f"Error training layer {layer_idx}: {e}")
@@ -375,8 +358,56 @@ def train_probing_classifiers(correct_reps, wrong_reps, correct_labels, wrong_la
                 'accuracy_correct_questions': 0.5,
                 'accuracy_wrong_questions': 0.5,
             })
+            classifiers.append(None)
     
-    return results
+    return results, classifiers
+
+
+def save_classifier_weights(classifiers, output_dir):
+    """
+    Save logistic regression weights layer by layer.
+    
+    Args:
+        classifiers: list of trained LogisticRegression classifiers
+        output_dir: directory to save weights
+    """
+    weights_data = {
+        'num_layers': len(classifiers),
+        'weights': [],
+        'intercepts': [],
+    }
+    
+    for layer_idx, clf in enumerate(classifiers):
+        if clf is not None:
+            # Save coefficient and intercept
+            weights = clf.coef_[0].tolist() if len(clf.coef_.shape) > 1 else clf.coef_.tolist()
+            intercept = float(clf.intercept_[0]) if hasattr(clf.intercept_, '__len__') else float(clf.intercept_)
+            
+            weights_data['weights'].append(weights)
+            weights_data['intercepts'].append(intercept)
+        else:
+            weights_data['weights'].append(None)
+            weights_data['intercepts'].append(None)
+    
+    # Save as numpy arrays for easier loading
+    weights_file = os.path.join(output_dir, 'lr_weights.npz')
+    
+    # Filter out None values for numpy
+    valid_weights = [w for w in weights_data['weights'] if w is not None]
+    valid_intercepts = [i for i in weights_data['intercepts'] if i is not None]
+    
+    np.savez(
+        weights_file,
+        weights=np.array(valid_weights),
+        intercepts=np.array(valid_intercepts),
+        num_layers=len(classifiers)
+    )
+    
+    print(f"\nSaved classifier weights to: {weights_file}")
+    print(f"  Number of layers: {len(classifiers)}")
+    print(f"  Weight shape per layer: {np.array(valid_weights[0]).shape if valid_weights else 'N/A'}")
+    
+    return weights_file
 
 
 def plot_layer_accuracy(results, output_dir):
@@ -555,7 +586,7 @@ def main():
         return
     
     # Train probing classifiers
-    probing_results = train_probing_classifiers(
+    probing_results, classifiers = train_probing_classifiers(
         correct_reps, wrong_reps, correct_labels, wrong_labels
     )
     
@@ -564,6 +595,9 @@ def main():
     with open(output_file, 'w') as f:
         json.dump(probing_results, f, indent=2)
     print(f"Saved probing results to: {output_file}")
+    
+    # Save classifier weights
+    save_classifier_weights(classifiers, args.output_dir)
     
     # Plot results
     plot_layer_accuracy(probing_results, args.output_dir)
