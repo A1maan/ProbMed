@@ -1,0 +1,2 @@
+- Final layer alignment: -0.011669744422724438,
+- Mean alignment (classifier across various layers vs. LM): -0.00610267442737477
