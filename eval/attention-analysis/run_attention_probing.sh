@@ -37,25 +37,25 @@ mkdir -p ${OUTPUT_DIR_PROBING}
 # ============================================
 # Step 1: Attention Analysis (Multi-GPU, ALL pairs)
 # ============================================
-echo ""
-echo "=========================================="
-echo "Step 1: Attention Analysis (ALL pairs, ${NUM_GPUS} GPUs)"
-echo "=========================================="
+# echo ""
+# echo "=========================================="
+# echo "Step 1: Attention Analysis (ALL pairs, ${NUM_GPUS} GPUs)"
+# echo "=========================================="
 
-python run_attention_batch.py \
-    --margin-scores-file ${MARGIN_SCORES_FILE} \
-    --test-file ${TEST_FILE} \
-    --image-folder ${IMAGE_FOLDER} \
-    --output-dir ${OUTPUT_DIR_ATTENTION} \
-    --num-chunks ${NUM_GPUS} \
-    --load-8bit
+# python run_attention_batch.py \
+#     --margin-scores-file ${MARGIN_SCORES_FILE} \
+#     --test-file ${TEST_FILE} \
+#     --image-folder ${IMAGE_FOLDER} \
+#     --output-dir ${OUTPUT_DIR_ATTENTION} \
+#     --num-chunks ${NUM_GPUS} \
+#     --load-8bit
 
 # ============================================
 # Step 2: Representation Probing (Single GPU - fast enough)
 # ============================================
 echo ""
 echo "=========================================="
-echo "Step 2: Representation Probing (${NUM_PAIRS} pairs)"
+echo "Step 1: Representation Probing (${NUM_PAIRS} pairs)"
 echo "=========================================="
 
 python representation_probing.py \
@@ -69,20 +69,20 @@ python representation_probing.py \
 # ============================================
 # Step 3: LR-LM Alignment Analysis
 # ============================================
-echo ""
-echo "=========================================="
-echo "Step 3: LR-LM Alignment Analysis"
-echo "=========================================="
+# echo ""
+# echo "=========================================="
+# echo "Step 3: LR-LM Alignment Analysis"
+# echo "=========================================="
 
-python lr_lm_alignment.py \
-    --weights-file ${OUTPUT_DIR_PROBING}/lr_weights.npz \
-    --output-dir ${OUTPUT_DIR_PROBING} \
-    --load-8bit
+# python lr_lm_alignment.py \
+#     --weights-file ${OUTPUT_DIR_PROBING}/lr_weights.npz \
+#     --output-dir ${OUTPUT_DIR_PROBING} \
+#     --load-8bit
 
-echo ""
-echo "=========================================="
-echo "DONE!"
-echo "Attention results: ${OUTPUT_DIR_ATTENTION}"
-echo "Probing results: ${OUTPUT_DIR_PROBING}"
-echo "Alignment results: ${OUTPUT_DIR_PROBING}/lm_alignment_analysis.json"
-echo "=========================================="
+# echo ""
+# echo "=========================================="
+# echo "DONE!"
+# echo "Attention results: ${OUTPUT_DIR_ATTENTION}"
+# echo "Probing results: ${OUTPUT_DIR_PROBING}"
+# echo "Alignment results: ${OUTPUT_DIR_PROBING}/lm_alignment_analysis.json"
+# echo "=========================================="

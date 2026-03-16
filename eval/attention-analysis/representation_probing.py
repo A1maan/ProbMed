@@ -312,7 +312,6 @@ def train_probing_classifiers(correct_reps, wrong_reps, correct_labels, wrong_la
             max_iter=1000,
             random_state=42,
             solver='lbfgs',
-            n_jobs=-1
         )
         
         try:
@@ -333,19 +332,33 @@ def train_probing_classifiers(correct_reps, wrong_reps, correct_labels, wrong_la
             else:
                 acc_correct = 0
             
-            # Metrics for wrong questions only
+            # Metrics for wrong questions only (split by ground truth label)
             wrong_mask = is_correct_test == 0
             if wrong_mask.sum() > 0:
                 acc_wrong = accuracy_score(y_test[wrong_mask], y_pred[wrong_mask])
             else:
                 acc_wrong = 0
-            
+
+            wrong_gt_yes = wrong_mask & (y_test == 1)
+            if wrong_gt_yes.sum() > 0:
+                acc_wrong_gt_yes = accuracy_score(y_test[wrong_gt_yes], y_pred[wrong_gt_yes])
+            else:
+                acc_wrong_gt_yes = 0
+
+            wrong_gt_no = wrong_mask & (y_test == 0)
+            if wrong_gt_no.sum() > 0:
+                acc_wrong_gt_no = accuracy_score(y_test[wrong_gt_no], y_pred[wrong_gt_no])
+            else:
+                acc_wrong_gt_no = 0
+
             results['per_layer'].append({
                 'layer': layer_idx,
                 'accuracy': accuracy,
                 'auc': auc,
                 'accuracy_correct_questions': acc_correct,
                 'accuracy_wrong_questions': acc_wrong,
+                'accuracy_wrong_gt_yes': acc_wrong_gt_yes,
+                'accuracy_wrong_gt_no': acc_wrong_gt_no,
             })
             classifiers.append(clf)
             
@@ -357,6 +370,8 @@ def train_probing_classifiers(correct_reps, wrong_reps, correct_labels, wrong_la
                 'auc': 0.5,
                 'accuracy_correct_questions': 0.5,
                 'accuracy_wrong_questions': 0.5,
+                'accuracy_wrong_gt_yes': 0.5,
+                'accuracy_wrong_gt_no': 0.5,
             })
             classifiers.append(None)
     
@@ -418,7 +433,9 @@ def plot_layer_accuracy(results, output_dir):
     aucs = [r['auc'] for r in results['per_layer']]
     acc_correct = [r['accuracy_correct_questions'] for r in results['per_layer']]
     acc_wrong = [r['accuracy_wrong_questions'] for r in results['per_layer']]
-    
+    acc_wrong_gt_yes = [r['accuracy_wrong_gt_yes'] for r in results['per_layer']]
+    acc_wrong_gt_no = [r['accuracy_wrong_gt_no'] for r in results['per_layer']]
+
     fig, axes = plt.subplots(2, 2, figsize=(14, 10))
     
     # 1. Overall accuracy
@@ -471,9 +488,28 @@ def plot_layer_accuracy(results, output_dir):
     plot_path = os.path.join(output_dir, 'paired_probing_accuracy.png')
     plt.savefig(plot_path, dpi=150, bbox_inches='tight')
     print(f"Saved plot to: {plot_path}")
-    
+
     plt.close()
-    
+
+    # Separate plot: wrong questions split by GT label
+    fig2, ax = plt.subplots(figsize=(9, 5))
+    ax.plot(layers, acc_wrong_gt_yes, 'm-o', markersize=4, label='Wrong questions (GT=Yes)')
+    ax.plot(layers, acc_wrong_gt_no, 'c-o', markersize=4, label='Wrong questions (GT=No)')
+    ax.axhline(y=0.5, color='gray', linestyle='--', alpha=0.5, label='Random baseline')
+    ax.set_xlabel('Layer', fontsize=12)
+    ax.set_ylabel('Accuracy', fontsize=12)
+    ax.set_title('Probing Accuracy for Incorrectly Answered Questions\nby Ground Truth Label', fontsize=14)
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+    ax.set_ylim([0.4, 1.0])
+    plt.tight_layout()
+
+    split_plot_path = os.path.join(output_dir, 'wrong_questions_gt_split_accuracy.png')
+    fig2.savefig(split_plot_path, dpi=150, bbox_inches='tight')
+    print(f"Saved GT-split plot to: {split_plot_path}")
+
+    plt.close()
+
     return fig
 
 
@@ -484,6 +520,8 @@ def analyze_results(results):
     accuracies = [r['accuracy'] for r in per_layer]
     acc_correct = [r['accuracy_correct_questions'] for r in per_layer]
     acc_wrong = [r['accuracy_wrong_questions'] for r in per_layer]
+    acc_wrong_gt_yes = [r['accuracy_wrong_gt_yes'] for r in per_layer]
+    acc_wrong_gt_no = [r['accuracy_wrong_gt_no'] for r in per_layer]
     
     print("\n" + "=" * 60)
     print("PAIRED PROBING ANALYSIS RESULTS")
@@ -519,7 +557,17 @@ def analyze_results(results):
     diffs = [c - w for c, w in zip(acc_correct, acc_wrong)]
     max_diff_layer = int(np.argmax(np.abs(diffs)))
     print(f"\nLargest divergence at layer {max_diff_layer}: {diffs[max_diff_layer]:.4f}")
-    
+
+    # Wrong questions broken down by GT label
+    best_wrong_gt_yes_layer = int(np.argmax(acc_wrong_gt_yes))
+    best_wrong_gt_no_layer = int(np.argmax(acc_wrong_gt_no))
+    print(f"\nWrong questions (GT=Yes) - best probing accuracy: "
+          f"{acc_wrong_gt_yes[best_wrong_gt_yes_layer]:.4f} at layer {best_wrong_gt_yes_layer}, "
+          f"final layer: {acc_wrong_gt_yes[-1]:.4f}")
+    print(f"Wrong questions (GT=No)  - best probing accuracy: "
+          f"{acc_wrong_gt_no[best_wrong_gt_no_layer]:.4f} at layer {best_wrong_gt_no_layer}, "
+          f"final layer: {acc_wrong_gt_no[-1]:.4f}")
+
     return {
         'best_layer': best_layer,
         'best_accuracy': float(best_acc),
@@ -528,6 +576,12 @@ def analyze_results(results):
         'avg_correct_wrong_diff': float(avg_diff),
         'max_divergence_layer': max_diff_layer,
         'max_divergence': float(diffs[max_diff_layer]),
+        'wrong_gt_yes_best_layer': best_wrong_gt_yes_layer,
+        'wrong_gt_yes_best_accuracy': float(acc_wrong_gt_yes[best_wrong_gt_yes_layer]),
+        'wrong_gt_yes_final_accuracy': float(acc_wrong_gt_yes[-1]),
+        'wrong_gt_no_best_layer': best_wrong_gt_no_layer,
+        'wrong_gt_no_best_accuracy': float(acc_wrong_gt_no[best_wrong_gt_no_layer]),
+        'wrong_gt_no_final_accuracy': float(acc_wrong_gt_no[-1]),
     }
 
 
