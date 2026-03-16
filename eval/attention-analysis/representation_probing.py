@@ -179,14 +179,15 @@ def find_paired_questions(margin_scores_file, test_file, num_pairs=500):
     return pairs
 
 
-def extract_paired_representations(extractor, pairs, image_folder):
+def extract_paired_representations(extractor, pairs, image_folder, image_mode="real"):
     """
     Extract representations for all paired questions.
-    
+
     For each pair (same image):
         - Extract representations for correct question
         - Extract representations for wrong question
     """
+    assert image_mode in ("real", "black", "random")
     num_layers = extractor.num_layers + 1  # +1 for embedding layer
     
     # Storage: separate lists for correct and wrong questions
@@ -201,11 +202,17 @@ def extract_paired_representations(extractor, pairs, image_folder):
         image_path = os.path.join(image_folder, pair['image_path'])
         
         if not os.path.exists(image_path):
+            print(f"Image not found, skipping: {image_path}")
             continue
         
         try:
             image = Image.open(image_path).convert('RGB')
-            
+            if image_mode == 'black':
+                image = Image.new('RGB', image.size, (0, 0, 0))
+            elif image_mode == 'random':
+                arr = np.random.randint(0, 256, (image.size[1], image.size[0], 3), dtype=np.uint8)
+                image = Image.fromarray(arr)
+
             # Extract for CORRECT question
             repr_correct, pred_correct = extractor.extract_layer_representations(
                 image, pair['correct']['question']
@@ -604,12 +611,20 @@ def main():
                         help="Load model in 8-bit")
     parser.add_argument("--seed", type=int, default=42,
                         help="Random seed")
+    parser.add_argument("--image-mode", type=str, default="real",
+                        choices=["real", "black", "random"],
+                        help="Image mode: 'real' uses actual images, 'black' replaces with black "
+                             "images, 'random' replaces with random noise (ablation baselines)")
     
     args = parser.parse_args()
     
     random.seed(args.seed)
     np.random.seed(args.seed)
     
+    # Namespace output dir for ablation modes so results don't overwrite the real run
+    if args.image_mode != "real":
+        args.output_dir = os.path.join(args.output_dir, f"image_mode_{args.image_mode}")
+
     # Create output directory
     os.makedirs(args.output_dir, exist_ok=True)
     
@@ -632,7 +647,7 @@ def main():
     
     # Extract representations for pairs
     correct_reps, wrong_reps, correct_labels, wrong_labels, pair_info = extract_paired_representations(
-        extractor, pairs, args.image_folder
+        extractor, pairs, args.image_folder, image_mode=args.image_mode
     )
     
     if len(correct_labels) < 50:

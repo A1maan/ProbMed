@@ -18,6 +18,7 @@ TEST_FILE="/workspace/ProbMed-Dataset/test/test.json"
 IMAGE_FOLDER="/workspace/ProbMed-Dataset/test/"
 OUTPUT_DIR_ATTENTION="./results/attention_analysis"
 OUTPUT_DIR_PROBING="./results/representation_probing"
+IMAGE_MODE="random"   # Options: real, black, random
 NUM_PAIRS=500       # Number of paired samples for representation probing
 NUM_GPUS=4          # Number of GPUs to use
 # Note: Attention analysis processes ALL valid pairs by default
@@ -64,6 +65,7 @@ python representation_probing.py \
     --image-folder ${IMAGE_FOLDER} \
     --output-dir ${OUTPUT_DIR_PROBING} \
     --num-pairs ${NUM_PAIRS} \
+    --image-mode ${IMAGE_MODE} \
     --load-8bit
 
 # ============================================
