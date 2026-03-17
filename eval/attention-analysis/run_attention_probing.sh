@@ -10,6 +10,14 @@
 
 set -e
 
+# Load shared environment variables (HF_TOKEN, etc.) from ProbMed repo root
+REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+if [ -f "${REPO_ROOT}/.env" ]; then
+    set -a
+    source "${REPO_ROOT}/.env"
+    set +a
+fi
+
 # ============================================
 # CONFIGURATION
 # ============================================
@@ -18,7 +26,6 @@ TEST_FILE="/workspace/ProbMed-Dataset/test/test.json"
 IMAGE_FOLDER="/workspace/ProbMed-Dataset/test/"
 OUTPUT_DIR_ATTENTION="./results/attention_analysis"
 OUTPUT_DIR_PROBING="./results/representation_probing"
-IMAGE_MODE="random"   # Options: real, black, random
 NUM_PAIRS=500       # Number of paired samples for representation probing
 NUM_GPUS=4          # Number of GPUs to use
 # Note: Attention analysis processes ALL valid pairs by default
@@ -52,21 +59,25 @@ mkdir -p ${OUTPUT_DIR_PROBING}
 #     --load-8bit
 
 # ============================================
-# Step 2: Representation Probing (Single GPU - fast enough)
+# Step 2: Representation Probing — all three image conditions
 # ============================================
-echo ""
-echo "=========================================="
-echo "Step 1: Representation Probing (${NUM_PAIRS} pairs)"
-echo "=========================================="
+for IMAGE_MODE in real black random; do
+    echo ""
+    echo "=========================================="
+    echo "Representation Probing: image-mode=${IMAGE_MODE} (${NUM_PAIRS} pairs)"
+    echo "=========================================="
 
-python representation_probing.py \
-    --margin-scores-file ${MARGIN_SCORES_FILE} \
-    --test-file ${TEST_FILE} \
-    --image-folder ${IMAGE_FOLDER} \
-    --output-dir ${OUTPUT_DIR_PROBING} \
-    --num-pairs ${NUM_PAIRS} \
-    --image-mode ${IMAGE_MODE} \
-    --load-8bit
+    python representation_probing.py \
+        --margin-scores-file ${MARGIN_SCORES_FILE} \
+        --test-file ${TEST_FILE} \
+        --image-folder ${IMAGE_FOLDER} \
+        --output-dir ${OUTPUT_DIR_PROBING} \
+        --num-pairs ${NUM_PAIRS} \
+        --image-mode ${IMAGE_MODE} \
+        --load-8bit
+
+    echo "Done: image-mode=${IMAGE_MODE}"
+done
 
 # ============================================
 # Step 3: LR-LM Alignment Analysis

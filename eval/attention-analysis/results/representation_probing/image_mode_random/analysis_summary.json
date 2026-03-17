@@ -1,15 +1,15 @@
 {
-  "best_layer": 15,
-  "best_accuracy": 0.82,
-  "final_accuracy": 0.745,
-  "accuracy_drop": 0.07499999999999996,
-  "avg_correct_wrong_diff": 0.37143429086177565,
+  "best_layer": 14,
+  "best_accuracy": 0.805,
+  "final_accuracy": 0.78,
+  "accuracy_drop": 0.025000000000000022,
+  "avg_correct_wrong_diff": 0.32878787878787885,
   "max_divergence_layer": 0,
-  "max_divergence": 0.6603943549194276,
+  "max_divergence": 0.64,
   "wrong_gt_yes_best_layer": 0,
   "wrong_gt_yes_best_accuracy": 1.0,
-  "wrong_gt_yes_final_accuracy": 0.84375,
+  "wrong_gt_yes_final_accuracy": 0.9428571428571428,
   "wrong_gt_no_best_layer": 32,
-  "wrong_gt_no_best_accuracy": 0.6307692307692307,
-  "wrong_gt_no_final_accuracy": 0.6307692307692307
+  "wrong_gt_no_best_accuracy": 0.5692307692307692,
+  "wrong_gt_no_final_accuracy": 0.5692307692307692
 }

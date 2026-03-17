@@ -266,35 +266,45 @@ def extract_paired_representations(extractor, pairs, image_folder, image_mode="r
 def train_probing_classifiers(correct_reps, wrong_reps, correct_labels, wrong_labels, test_size=0.2):
     """
     Train logistic regression classifier for each layer.
-    
+
     Trains on COMBINED data from both correct and wrong questions.
     This tests: "Can layer X predict the ground truth answer?"
-    
+
+    The train/test split is done at the PAIR level so that both questions from
+    the same image always end up in the same split (no image-feature leakage).
+
     Returns:
         results: dict with per-layer metrics for combined, correct-only, and wrong-only
         classifiers: list of trained LogisticRegression classifiers, one per layer
+        test_pair_idx: indices into the original pairs list that form the test set
     """
     num_layers = len(correct_reps)
-    
+    num_pairs = len(correct_labels)
+
     # Combine correct and wrong for training
     combined_reps = [np.vstack([correct_reps[i], wrong_reps[i]]) for i in range(num_layers)]
     combined_labels = np.concatenate([correct_labels, wrong_labels])
-    
+
     # Track which samples are from correct vs wrong questions
     is_correct_question = np.concatenate([
-        np.ones(len(correct_labels)),
-        np.zeros(len(wrong_labels))
+        np.ones(num_pairs),
+        np.zeros(num_pairs)
     ])
-    
-    # Split data
-    indices = np.arange(len(combined_labels))
-    train_idx, test_idx = train_test_split(
-        indices,
+
+    # Split at PAIR level so both questions from the same image stay together.
+    # Correct questions occupy indices 0..num_pairs-1,
+    # wrong questions occupy indices num_pairs..2*num_pairs-1.
+    pair_indices = np.arange(num_pairs)
+    train_pair_idx, test_pair_idx = train_test_split(
+        pair_indices,
         test_size=test_size,
         random_state=42,
-        stratify=combined_labels
+        stratify=correct_labels,  # balance yes/no across splits
     )
-    
+
+    train_idx = np.concatenate([train_pair_idx, train_pair_idx + num_pairs])
+    test_idx = np.concatenate([test_pair_idx, test_pair_idx + num_pairs])
+
     y_train = combined_labels[train_idx]
     y_test = combined_labels[test_idx]
     is_correct_test = is_correct_question[test_idx]
@@ -382,7 +392,7 @@ def train_probing_classifiers(correct_reps, wrong_reps, correct_labels, wrong_la
             })
             classifiers.append(None)
     
-    return results, classifiers
+    return results, classifiers, test_pair_idx
 
 
 def save_classifier_weights(classifiers, output_dir):
@@ -655,10 +665,32 @@ def main():
         return
     
     # Train probing classifiers
-    probing_results, classifiers = train_probing_classifiers(
+    probing_results, classifiers, test_pair_idx = train_probing_classifiers(
         correct_reps, wrong_reps, correct_labels, wrong_labels
     )
-    
+
+    # Compute model accuracy on the same held-out test pairs
+    test_pairs_info = [pair_info[i] for i in test_pair_idx]
+    model_acc_correct_q = np.mean([
+        1 if p['correct_pred'] == p['correct_gt'] else 0 for p in test_pairs_info
+    ])
+    model_acc_wrong_q = np.mean([
+        1 if p['wrong_pred'] == p['wrong_gt'] else 0 for p in test_pairs_info
+    ])
+    model_acc_overall = (model_acc_correct_q + model_acc_wrong_q) / 2
+
+    print(f"\nModel accuracy on held-out test pairs ({len(test_pair_idx)} pairs):")
+    print(f"  Overall:            {model_acc_overall:.4f}")
+    print(f"  Correct questions:  {model_acc_correct_q:.4f}")
+    print(f"  Wrong questions:    {model_acc_wrong_q:.4f}")
+
+    probing_results['model_accuracy'] = {
+        'overall': float(model_acc_overall),
+        'correct_questions': float(model_acc_correct_q),
+        'wrong_questions': float(model_acc_wrong_q),
+        'num_test_pairs': len(test_pair_idx),
+    }
+
     # Save results
     output_file = os.path.join(args.output_dir, 'probing_results.json')
     with open(output_file, 'w') as f:
