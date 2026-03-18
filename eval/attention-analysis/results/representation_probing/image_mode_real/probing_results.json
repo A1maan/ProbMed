@@ -299,5 +299,11 @@
     }
   ],
   "num_train": 800,
-  "num_test": 200
+  "num_test": 200,
+  "model_accuracy": {
+    "overall": 0.5,
+    "correct_questions": 1.0,
+    "wrong_questions": 0.0,
+    "num_test_pairs": 100
+  }
 }
