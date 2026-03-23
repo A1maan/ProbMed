@@ -25,9 +25,8 @@ fi
 # ============================================
 # CONFIGURATION
 # ============================================
-OUTPUT_ROOT="${SCRIPT_DIR}/results/correction_score"
-CACHE_DIR="${OUTPUT_ROOT}/cache"
-RUN_DIR="${OUTPUT_ROOT}/run"
+CACHE_DIR="${SCRIPT_DIR}/results/hidden_states"
+RUN_DIR="${SCRIPT_DIR}/results/correction_model"
 
 # ============================================
 # Install dependencies
@@ -38,7 +37,6 @@ pip install -q transformers accelerate bitsandbytes pillow tqdm matplotlib sciki
 # ============================================
 # Create output directories
 # ============================================
-mkdir -p "${CACHE_DIR}"
 mkdir -p "${RUN_DIR}"
 
 
