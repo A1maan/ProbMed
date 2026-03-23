@@ -1,5 +1,6 @@
 import argparse
 import json
+import math
 import os
 
 import numpy as np
@@ -7,6 +8,18 @@ import torch
 from PIL import Image
 from tqdm import tqdm
 from transformers import AutoProcessor, BitsAndBytesConfig, LlavaForConditionalGeneration
+
+
+def split_list(lst, n):
+    """Split a list into n (roughly) equal-sized chunks."""
+    chunk_size = math.ceil(len(lst) / n)
+    return [lst[i:i + chunk_size] for i in range(0, len(lst), chunk_size)]
+
+
+def get_chunk(lst, n, k):
+    """Get chunk k out of n chunks."""
+    chunks = split_list(lst, n)
+    return chunks[k] if k < len(chunks) else []
 
 
 class HiddenStateExtractor:
@@ -165,6 +178,10 @@ def main():
     parser.add_argument("--output-dir",         required=True)
     parser.add_argument("--model-name", default="chaoyinshe/llava-med-v1.5-mistral-7b-hf")
     parser.add_argument("--load-8bit",  action="store_true", default=True)
+    parser.add_argument("--num-chunks", type=int, default=1,
+                        help="Total number of chunks (GPUs) to split work across")
+    parser.add_argument("--chunk-idx",  type=int, default=0,
+                        help="Index of this chunk (0-based)")
     args = parser.parse_args()
 
     os.makedirs(args.output_dir, exist_ok=True)
@@ -175,6 +192,9 @@ def main():
         print("No questions found.")
         return
 
+    questions = get_chunk(questions, args.num_chunks, args.chunk_idx)
+    print(f"Chunk {args.chunk_idx}/{args.num_chunks}: processing {len(questions)} questions")
+
     extractor   = HiddenStateExtractor(model_name=args.model_name, load_8bit=args.load_8bit)
     w_yes, w_no = extractor.get_lm_head_weights()
 
@@ -182,7 +202,10 @@ def main():
         extractor, questions, args.image_folder
     )
 
-    cache_path = os.path.join(args.output_dir, "hidden_states_cache.npz")
+    # Use chunk-specific filenames when running in multi-GPU mode
+    suffix = f"-chunk{args.chunk_idx}" if args.num_chunks > 1 else ""
+
+    cache_path = os.path.join(args.output_dir, f"hidden_states_cache{suffix}.npz")
     np.savez(
         cache_path,
         hidden_states=hidden_states,
@@ -195,16 +218,19 @@ def main():
     )
     print(f"Saved cache: {cache_path}  shape={hidden_states.shape}")
 
-    meta_path = os.path.join(args.output_dir, "metadata.json")
+    meta_path = os.path.join(args.output_dir, f"metadata{suffix}.json")
     with open(meta_path, "w") as f:
         json.dump(metadata, f, indent=2)
     print(f"Saved metadata: {meta_path}")
 
     # Sanity check: d@h should correlate with yes_logit - no_logit
-    d    = (w_yes - w_no).astype(np.float32)
-    H    = hidden_states[:200].astype(np.float32)
-    corr = float(np.corrcoef(H @ d, (yes_logits - no_logits)[:200])[0, 1])
-    print(f"Sanity check corr(d@h, logit_diff) = {corr:.4f}")
+    if len(hidden_states) >= 2:
+        d    = (w_yes - w_no).astype(np.float32)
+        H    = hidden_states[:200].astype(np.float32)
+        corr = float(np.corrcoef(H @ d, (yes_logits - no_logits)[:200])[0, 1])
+        print(f"Sanity check corr(d@h, logit_diff) = {corr:.4f}")
+    else:
+        print("Sanity check skipped: no samples extracted")
 
 
 if __name__ == "__main__":
