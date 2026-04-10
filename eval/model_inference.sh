@@ -26,10 +26,12 @@ answer_file_json="./response_file/${model_name}.json"
 # HuggingFace model names
 LLAVAMED_HF="chaoyinshe/llava-med-v1.5-mistral-7b-hf"
 CHEXAGENT_HF="StanfordAIMI/CheXagent-2-3b"
+MEDGEMMA_HF="google/medgemma-1.5-4b-it"
 
 # Path to inference scripts
 LLAVAMED_INFERENCE_DIR="./inference/LLaVA-Med"
 CHEXAGENT_INFERENCE_DIR="./inference/CheXagent"
+MEDGEMMA_INFERENCE_DIR="./inference/MedGemma"
 
 # ============================================
 
@@ -95,9 +97,33 @@ with open('${answer_file_json}', 'w') as f:
 print('Converted to JSON: ${answer_file_json}')
 "
 
+elif [ "${model_name}" == "medgemma" ]; then
+    # Load HF_TOKEN from .env if present
+    REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+    if [ -f "${REPO_ROOT}/.env" ]; then
+        set -a; source "${REPO_ROOT}/.env"; set +a
+    fi
+
+    $PYTHON ${MEDGEMMA_INFERENCE_DIR}/run_eval_batch.py \
+        --num-chunks 4 \
+        --model-name ${MEDGEMMA_HF} \
+        --question-file ${question_file} \
+        --image-folder ${image_folder} \
+        --answers-file ${answer_file}.jsonl \
+        --batch-size 1
+
+    $PYTHON -c "
+import json
+with open('${answer_file}.jsonl', 'r') as f:
+    data = [json.loads(line) for line in f]
+with open('${answer_file_json}', 'w') as f:
+    json.dump(data, f, indent=2)
+print('Converted to JSON: ${answer_file_json}')
+"
+
 else
     echo "Unknown model: ${model_name}"
-    echo "Available models: llavamed, llavamed_hf, chexagent"
+    echo "Available models: llavamed, llavamed_hf, chexagent, medgemma"
     exit 1
 fi
 
