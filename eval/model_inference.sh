@@ -19,9 +19,11 @@ answer_file_json="./response_file/${model_name}.json"
 
 # HuggingFace model names
 LLAVAMED_HF="chaoyinshe/llava-med-v1.5-mistral-7b-hf"
+CHEXAGENT_HF="StanfordAIMI/CheXagent"
 
 # Path to inference scripts
 LLAVAMED_INFERENCE_DIR="./inference/LLaVA-Med"
+CHEXAGENT_INFERENCE_DIR="./inference/CheXagent"
 
 # ============================================
 
@@ -69,9 +71,27 @@ with open('${answer_file_json}', 'w') as f:
     json.dump(data, f, indent=2)
 "
 
+elif [ "${model_name}" == "chexagent" ]; then
+    python ${CHEXAGENT_INFERENCE_DIR}/run_eval_batch.py \
+        --num-chunks 4 \
+        --model-name ${CHEXAGENT_HF} \
+        --question-file ${question_file} \
+        --image-folder ${image_folder} \
+        --answers-file ${answer_file}.jsonl
+
+    # Convert JSONL to JSON for calculate_score.py
+    python -c "
+import json
+with open('${answer_file}.jsonl', 'r') as f:
+    data = [json.loads(line) for line in f]
+with open('${answer_file_json}', 'w') as f:
+    json.dump(data, f, indent=2)
+print('Converted to JSON: ${answer_file_json}')
+"
+
 else
     echo "Unknown model: ${model_name}"
-    echo "Available models: llavamed, llavamed_hf"
+    echo "Available models: llavamed, llavamed_hf, chexagent"
     exit 1
 fi
 

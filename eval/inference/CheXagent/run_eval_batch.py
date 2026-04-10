@@ -6,7 +6,7 @@ from concurrent.futures import ProcessPoolExecutor
 def parse_args():
     parser = argparse.ArgumentParser(description='Parallel Chexagent evaluation script.')
 
-    parser.add_argument("--model-name", type=str, default="facebook/opt-350m")
+    parser.add_argument("--model-name", type=str, default="StanfordAIMI/CheXagent")
     parser.add_argument("--image-folder", type=str, default="")
     parser.add_argument("--question-file", type=str, default="tables/question.json")
     parser.add_argument("--answers-file", type=str, default="answer.jsonl")

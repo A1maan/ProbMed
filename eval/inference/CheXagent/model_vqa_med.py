@@ -33,9 +33,9 @@ def eval_model(args):
     dtype = torch.float16
 
     # step 2: Load Processor and Model
-    processor = AutoProcessor.from_pretrained("path/to/CheXagent", trust_remote_code=True)
-    generation_config = GenerationConfig.from_pretrained("path/to/CheXagent")
-    model = AutoModelForCausalLM.from_pretrained("path/to/CheXagent", torch_dtype=dtype, trust_remote_code=True)
+    processor = AutoProcessor.from_pretrained(args.model_name, trust_remote_code=True)
+    generation_config = GenerationConfig.from_pretrained(args.model_name)
+    model = AutoModelForCausalLM.from_pretrained(args.model_name, torch_dtype=dtype, trust_remote_code=True)
     model = model.cuda().half()
 
     questions = json.load(open(os.path.expanduser(args.question_file), "r"))
