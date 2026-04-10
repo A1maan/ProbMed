@@ -1,0 +1,35 @@
+=== Printing accuracy in Appendix Tables ===
+chexagent ct scan_abdomen
+{'abnormality': {'acc': 45.714285714285715, 'num': 70}, 'modality': {'acc': 15.978695073235686, 'acc w. hallu': 99.46737683089214, 'num': 751}, 'body_part': {'acc': 15.84553928095872, 'acc w. hallu': 96.53794940079894, 'num': 751}, 'entity': {'acc': 7.456724367509987, 'acc w. hallu': 86.41810918774966, 'num': 751}, 'grounding': {'acc': 4.297520661157025, 'acc w. hallu': 80.0, 'num': 751}}
+chexagent ct scan_brain
+{'abnormality': {'acc': 47.05882352941176, 'num': 34}, 'modality': {'acc': 18.14814814814815, 'acc w. hallu': 98.51851851851852, 'num': 270}, 'body_part': {'acc': 13.333333333333334, 'acc w. hallu': 62.96296296296296, 'num': 270}, 'entity': {'acc': 10.74074074074074, 'acc w. hallu': 63.33333333333333, 'num': 270}, 'grounding': {'acc': 9.473684210526317, 'acc w. hallu': 50.526315789473685, 'num': 270}}
+chexagent ct scan_chest
+{'abnormality': {'acc': 50.0, 'num': 34}, 'modality': {'acc': 19.525547445255476, 'acc w. hallu': 97.44525547445255, 'num': 548}, 'body_part': {'acc': 29.744525547445257, 'acc w. hallu': 100.0, 'num': 548}, 'entity': {'acc': 18.43065693430657, 'acc w. hallu': 80.47445255474453, 'num': 548}, 'grounding': {'acc': 10.829493087557603, 'acc w. hallu': 69.81566820276498, 'num': 548}}
+chexagent ct scan_spine
+{'abnormality': {'acc': 50.0, 'num': 2}, 'modality': {'acc': 28.735632183908045, 'acc w. hallu': 96.55172413793103, 'num': 87}, 'body_part': {'acc': 29.88505747126437, 'acc w. hallu': 97.70114942528735, 'num': 87}, 'entity': {'acc': 3.4482758620689653, 'acc w. hallu': 94.25287356321839, 'num': 87}, 'grounding': {'acc': 1.282051282051282, 'acc w. hallu': 92.3076923076923, 'num': 87}}
+chexagent mri_abdomen
+{'abnormality': {'acc': 42.857142857142854, 'num': 14}, 'modality': {'acc': 0.0, 'acc w. hallu': 54.761904761904766, 'num': 84}, 'body_part': {'acc': 10.714285714285714, 'acc w. hallu': 95.23809523809523, 'num': 84}, 'entity': {'acc': 7.142857142857142, 'acc w. hallu': 78.57142857142857, 'num': 84}, 'grounding': {'acc': 9.090909090909092, 'acc w. hallu': 77.27272727272727, 'num': 84}}
+chexagent mri_brain
+{'abnormality': {'acc': 46.42857142857143, 'num': 56}, 'modality': {'acc': 0.0, 'acc w. hallu': 87.27915194346289, 'num': 566}, 'body_part': {'acc': 8.303886925795052, 'acc w. hallu': 83.92226148409894, 'num': 566}, 'entity': {'acc': 9.010600706713781, 'acc w. hallu': 80.03533568904594, 'num': 566}, 'grounding': {'acc': 6.81265206812652, 'acc w. hallu': 71.77615571776155, 'num': 566}}
+chexagent mri_chest
+{'abnormality': {'acc': 50.0, 'num': 8}, 'modality': {'acc': 0.0, 'acc w. hallu': 42.5, 'num': 40}, 'body_part': {'acc': 22.5, 'acc w. hallu': 100.0, 'num': 40}, 'entity': {'acc': 10.0, 'acc w. hallu': 72.5, 'num': 40}, 'grounding': {'acc': 8.823529411764707, 'acc w. hallu': 88.23529411764706, 'num': 40}}
+chexagent mri_spine
+{'abnormality': {'acc': 50.0, 'num': 36}, 'modality': {'acc': 0.0, 'acc w. hallu': 49.382716049382715, 'num': 324}, 'body_part': {'acc': 29.629629629629626, 'acc w. hallu': 100.0, 'num': 324}, 'entity': {'acc': 4.320987654320987, 'acc w. hallu': 88.88888888888889, 'num': 324}, 'grounding': {'acc': 1.3513513513513513, 'acc w. hallu': 91.8918918918919, 'num': 324}}
+chexagent x-ray_abdomen
+{'abnormality': {'acc': 50.0, 'num': 20}, 'modality': {'acc': 53.01724137931034, 'acc w. hallu': 100.0, 'num': 232}, 'body_part': {'acc': 39.224137931034484, 'acc w. hallu': 94.82758620689656, 'num': 232}, 'entity': {'acc': 15.086206896551724, 'acc w. hallu': 84.05172413793103, 'num': 232}, 'grounding': {'acc': 7.909604519774012, 'acc w. hallu': 80.22598870056498, 'num': 232}}
+chexagent x-ray_brain
+{'abnormality': {'acc': 50.0, 'num': 6}, 'modality': {'acc': 29.11392405063291, 'acc w. hallu': 100.0, 'num': 79}, 'body_part': {'acc': 18.9873417721519, 'acc w. hallu': 78.48101265822784, 'num': 79}, 'entity': {'acc': 16.455696202531644, 'acc w. hallu': 86.07594936708861, 'num': 79}, 'grounding': {'acc': 8.88888888888889, 'acc w. hallu': 82.22222222222221, 'num': 79}}
+chexagent x-ray_chest
+{'abnormality': {'acc': 55.082135523613964, 'num': 1948}, 'modality': {'acc': 94.1025641025641, 'acc w. hallu': 100.0, 'num': 3120}, 'body_part': {'acc': 83.9423076923077, 'acc w. hallu': 99.83974358974359, 'num': 3120}, 'entity': {'acc': 53.78205128205128, 'acc w. hallu': 81.76282051282051, 'num': 3120}, 'grounding': {'acc': 30.12108980827447, 'acc w. hallu': 82.03834510595358, 'num': 3120}}
+chexagent x-ray_spine
+{'abnormality': {'acc': 50.0, 'num': 24}, 'modality': {'acc': 44.554455445544555, 'acc w. hallu': 100.0, 'num': 202}, 'body_part': {'acc': 44.05940594059406, 'acc w. hallu': 99.5049504950495, 'num': 202}, 'entity': {'acc': 3.4653465346534658, 'acc w. hallu': 93.06930693069307, 'num': 202}, 'grounding': {'acc': 0.0, 'acc w. hallu': 95.97701149425288, 'num': 202}}
+==============================
+=== Printing accuracy aggregated over modality-organ ===
+chexagent {'abnormality': {'acc': 54.08525754884547, 'num': 2252}, 'modality': {'acc': 55.10074567666191, 'num': 6303, 'acc w. hallu': 94.89132159289227}, 'body_part': {'acc': 52.65746469934952, 'num': 6303, 'acc w. hallu': 95.90671108995717}, 'entity': {'acc': 31.683325400602886, 'num': 6303, 'acc w. hallu': 82.19895287958116}, 'grounding': {'acc': 18.04805022180257, 'num': 6303, 'acc w. hallu': 79.46778305892182}}
+==============================
+=== Printing overall accuracy further aggregated over question types ===
+chexagent:
+  acc w. adv. pair: 40.58%
+  acc w.o. adv. pair: 88.12%
+  acc. diff: 47.54%
+==============================

@@ -294,8 +294,7 @@ def get_model_score_vqa_rad_ablation(ans_file_name):
     return sum(score_w_adv)/len(score_w_adv), sum(score_wo_adv)/len(score_wo_adv)
 
 def main():
-    # Changed: Only evaluate llavamed
-    models = ["llavamed"]
+    models = ["chexagent"]
     all_model_data = parse_response(models)
     all_scores, all_scores_aggr_question, overall_scores_aggr_question = get_scores_probmed(all_model_data)
 
