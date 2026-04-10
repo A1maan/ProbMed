@@ -25,6 +25,7 @@ fi
 # CONFIGURATION
 # ============================================
 INFERENCE_FILE="${REPO_ROOT}/eval/response_file/chexagent.json"
+TEST_FILE="/workspace/ProbMed-Dataset/test/test.json"
 IMAGE_FOLDER="/workspace/ProbMed-Dataset/test/"
 MODEL_NAME="StanfordAIMI/CheXagent-2-3b"
 PYTHON=/venv/main/bin/python3
@@ -53,6 +54,7 @@ echo "=========================================="
 
 $PYTHON "${SCRIPT_DIR}/run_extract_hidden_states_batch.py" \
     --inference-file "${INFERENCE_FILE}" \
+    --test-file "${TEST_FILE}" \
     --image-folder "${IMAGE_FOLDER}" \
     --output-dir "${CACHE_DIR}" \
     --model-name "${MODEL_NAME}" \

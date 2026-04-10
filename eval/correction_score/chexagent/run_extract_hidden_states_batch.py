@@ -48,6 +48,7 @@ def build_cmd(chunk_idx, args, extract_script):
     cmd = (
         f"CUDA_VISIBLE_DEVICES={chunk_idx} /venv/main/bin/python3 {extract_script} "
         f"--inference-file {args.inference_file} "
+        f"--test-file {args.test_file} "
         f"--image-folder {args.image_folder} "
         f"--output-dir {args.output_dir} "
         f"--model-name {args.model_name} "
@@ -211,6 +212,8 @@ def main():
                         default="StanfordAIMI/CheXagent-2-3b")
     parser.add_argument("--inference-file", type=str, required=True,
                         help="Path to chexagent.json inference output")
+    parser.add_argument("--test-file", type=str, required=True,
+                        help="Path to test.json (used to look up image paths)")
     parser.add_argument("--image-folder", type=str, required=True,
                         help="Base image folder (image paths in test.json are relative to this)")
     parser.add_argument("--output-dir", type=str, default="results/hidden_states",
@@ -229,6 +232,7 @@ def main():
     print("=" * 60)
     print(f"Model:              {args.model_name}")
     print(f"Inference file:     {args.inference_file}")
+    print(f"Test file:          {args.test_file}")
     print(f"Image folder:       {args.image_folder}")
     print(f"Output dir:         {args.output_dir}")
     print(f"Num GPUs/chunks:    {args.num_chunks}")

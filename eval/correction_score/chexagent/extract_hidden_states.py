@@ -80,36 +80,57 @@ class HiddenStateExtractor:
         return hidden, yes_logit, no_logit
 
 
-def load_questions(inference_file, image_folder):
-    """Load questions from chexagent.json inference output."""
+def build_image_lookup(test_file):
+    """Build (id, question) -> image_path lookup from test.json."""
+    with open(test_file) as f:
+        test_data = json.load(f)
+    lookup = {}
+    for item in test_data:
+        item_id  = item.get("id")
+        question = item.get("question", "").replace("<image>", "").strip()
+        if item_id is not None and "image" in item:
+            lookup[(item_id, question)] = item["image"]
+    return lookup
+
+
+def load_questions(inference_file, image_folder, test_file):
+    """Load questions from chexagent.json, joining with test.json for image paths."""
+    image_lookup = build_image_lookup(test_file)
+
     with open(inference_file) as f:
         data = json.load(f)
 
     questions = []
+    missing = 0
     for r in data:
         gt_ans = r.get("gt_ans", "").lower().strip()
         if gt_ans not in ("yes", "no"):
+            continue
+
+        qid      = r.get("id")
+        question = r.get("question", "").replace("<image>", "").strip()
+
+        image_file = image_lookup.get((qid, question))
+        if image_file is None:
+            missing += 1
             continue
 
         response   = r.get("response", "")
         model_pred = parse_model_pred(response)
         is_correct = model_pred == gt_ans
 
-        image_file = r.get("image", "")
-        image_path = os.path.join(image_folder, image_file) if image_file else ""
-
         questions.append({
-            "id":         r.get("id"),
-            "question":   r.get("question", "").replace("<image>", "").strip(),
+            "id":         qid,
+            "question":   question,
             "gt_ans":     gt_ans,
             "model_pred": model_pred,
             "is_correct": is_correct,
             "qa_type":    r.get("qa_type", ""),
             "image_type": r.get("image_type", ""),
-            "image_path": image_path,
+            "image_path": os.path.join(image_folder, image_file),
         })
 
-    print(f"Loaded {len(questions)} yes/no questions from {inference_file}")
+    print(f"Loaded {len(questions)} yes/no questions ({missing} skipped: no image mapping)")
     return questions
 
 
@@ -167,6 +188,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--inference-file", required=True,
                         help="Path to chexagent.json inference output")
+    parser.add_argument("--test-file",      required=True,
+                        help="Path to test.json (used to look up image paths)")
     parser.add_argument("--image-folder",   required=True)
     parser.add_argument("--output-dir",     required=True)
     parser.add_argument("--model-name", default="StanfordAIMI/CheXagent-2-3b")
@@ -178,7 +201,7 @@ def main():
 
     os.makedirs(args.output_dir, exist_ok=True)
 
-    questions = load_questions(args.inference_file, args.image_folder)
+    questions = load_questions(args.inference_file, args.image_folder, args.test_file)
     if not questions:
         print("No questions found.")
         return
