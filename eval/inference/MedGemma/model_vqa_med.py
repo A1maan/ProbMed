@@ -26,11 +26,13 @@ def load_model(model_name):
         model_name, torch_dtype=torch.bfloat16, device_map="auto"
     )
     model.eval()
+    eos = model.generation_config.eos_token_id
+    model.generation_config.pad_token_id = eos[0] if isinstance(eos, list) else eos
     print("Model loaded successfully!")
     return model, processor
 
 
-def run_inference_single(model, processor, image, question, max_new_tokens=512):
+def run_inference_single(model, processor, image, question, max_new_tokens=64):
     messages = [
         {
             "role": "user",
@@ -67,8 +69,23 @@ def eval_model(args):
     answers_file = os.path.expanduser(args.answers_file)
     os.makedirs(os.path.dirname(answers_file), exist_ok=True)
 
-    with open(answers_file, "w") as ans_file:
+    # Resume: load already-completed (id, qa_type) pairs
+    completed = set()
+    if os.path.exists(answers_file):
+        with open(answers_file, "r") as f:
+            for line in f:
+                try:
+                    rec = json.loads(line)
+                    completed.add((rec["id"], rec["qa_type"]))
+                except Exception:
+                    pass
+        print(f"Chunk {args.chunk_idx}: resuming, {len(completed)} already done, "
+              f"{len(questions) - len(completed)} remaining.")
+
+    with open(answers_file, "a") as ans_file:
         for line in tqdm(questions, desc=f"Chunk {args.chunk_idx}"):
+            if (line["id"], line.get("qa_type", "unknown")) in completed:
+                continue
             idx       = line["id"]
             qa_type   = line.get("qa_type", "unknown")
             image_type = line.get("image_type", "unknown")
@@ -108,7 +125,7 @@ if __name__ == "__main__":
     parser.add_argument("--num-chunks", type=int, default=1)
     parser.add_argument("--chunk-idx", type=int, default=0)
     parser.add_argument("--temperature", type=float, default=1.0)
-    parser.add_argument("--max-new-tokens", type=int, default=512)
+    parser.add_argument("--max-new-tokens", type=int, default=64)
     parser.add_argument("--batch-size", type=int, default=1)
     parser.add_argument("--mm-projector", type=str, default=None)
     parser.add_argument("--vision-tower", type=str, default=None)
