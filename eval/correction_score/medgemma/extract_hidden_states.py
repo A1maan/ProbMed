@@ -40,7 +40,7 @@ class HiddenStateExtractor:
         self.yes_token_id = self.processor.tokenizer.encode("Yes", add_special_tokens=False)[0]
         self.no_token_id  = self.processor.tokenizer.encode("No",  add_special_tokens=False)[0]
 
-        self.target_layer = len(self.model.language_model.model.layers) - 1
+        self.target_layer = len(self.model.model.language_model.layers) - 1
         print(f"Model loaded! Target layer: {self.target_layer}, "
               f"Yes token: {self.yes_token_id}, No token: {self.no_token_id}")
 
@@ -50,8 +50,8 @@ class HiddenStateExtractor:
 
     def get_lm_head_weights(self):
         with torch.no_grad():
-            w_yes = self.model.language_model.lm_head.weight[self.yes_token_id].cpu().float().numpy()
-            w_no  = self.model.language_model.lm_head.weight[self.no_token_id].cpu().float().numpy()
+            w_yes = self.model.lm_head.weight[self.yes_token_id].cpu().float().numpy()
+            w_no  = self.model.lm_head.weight[self.no_token_id].cpu().float().numpy()
         return w_yes, w_no
 
     def extract(self, image, question):
@@ -75,7 +75,7 @@ class HiddenStateExtractor:
         with torch.inference_mode():
             outputs = self.model(**inputs, output_hidden_states=True, return_dict=True)
 
-        hidden    = outputs.hidden_states[self.target_layer][0, -1, :].cpu().to(torch.float16).numpy()
+        hidden    = outputs.hidden_states[self.target_layer][0, -1, :].cpu().to(torch.float32).numpy()
         logits    = outputs.logits[0, -1, :]
         yes_logit = logits[self.yes_token_id].item()
         no_logit  = logits[self.no_token_id].item()
@@ -177,7 +177,7 @@ def run_extraction(extractor, questions):
     print(f"Extracted {len(hidden_list)} questions ({skipped} skipped)")
 
     return (
-        np.array(hidden_list,    dtype=np.float16),
+        np.array(hidden_list,    dtype=np.float32),
         np.array(yes_logit_list, dtype=np.float32),
         np.array(no_logit_list,  dtype=np.float32),
         np.array(gt_label_list,  dtype=np.int8),
@@ -238,6 +238,7 @@ def main():
 
     if len(hidden_states) >= 2:
         d    = (w_yes - w_no).astype(np.float32)
+        d    = d / (np.linalg.norm(d) + 1e-12)
         H    = hidden_states[:200].astype(np.float32)
         corr = float(np.corrcoef(H @ d, (yes_logits - no_logits)[:200])[0, 1])
         print(f"Sanity check corr(d@h, logit_diff) = {corr:.4f}")

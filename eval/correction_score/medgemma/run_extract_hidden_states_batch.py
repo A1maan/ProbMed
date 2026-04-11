@@ -198,6 +198,7 @@ def merge_results(args):
     # Sanity check
     if len(hidden_states) >= 2:
         d    = (w_yes - w_no).astype(np.float32)
+        d    = d / (np.linalg.norm(d) + 1e-12)
         H    = hidden_states[:200].astype(np.float32)
         corr = float(np.corrcoef(H @ d, (yes_logits - no_logits)[:200])[0, 1])
         print(f"Sanity check corr(d@h, logit_diff) = {corr:.4f}")

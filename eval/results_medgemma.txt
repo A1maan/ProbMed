@@ -1,0 +1,35 @@
+=== Printing accuracy in Appendix Tables ===
+medgemma ct scan_abdomen
+{'abnormality': {'acc': 48.57142857142857, 'num': 70}, 'modality': {'acc': 88.1491344873502, 'acc w. hallu': 94.27430093209055, 'num': 751}, 'body_part': {'acc': 84.39999999999999, 'acc w. hallu': 92.93333333333334, 'num': 750}, 'entity': {'acc': 1.7310252996005324, 'acc w. hallu': 58.854860186418115, 'num': 753}, 'grounding': {'acc': 1.8181818181818181, 'acc w. hallu': 61.48760330578512, 'num': 753}}
+medgemma ct scan_brain
+{'abnormality': {'acc': 47.05882352941176, 'num': 34}, 'modality': {'acc': 85.92592592592592, 'acc w. hallu': 87.03703703703704, 'num': 270}, 'body_part': {'acc': 96.29629629629629, 'acc w. hallu': 97.03703703703704, 'num': 270}, 'entity': {'acc': 1.4814814814814816, 'acc w. hallu': 59.25925925925925, 'num': 270}, 'grounding': {'acc': 1.0526315789473684, 'acc w. hallu': 73.68421052631578, 'num': 270}}
+medgemma ct scan_chest
+{'abnormality': {'acc': 50.0, 'num': 34}, 'modality': {'acc': 59.67153284671532, 'acc w. hallu': 89.23357664233576, 'num': 548}, 'body_part': {'acc': 85.94890510948905, 'acc w. hallu': 95.07299270072993, 'num': 548}, 'entity': {'acc': 2.5547445255474455, 'acc w. hallu': 64.41605839416059, 'num': 548}, 'grounding': {'acc': 2.0737327188940093, 'acc w. hallu': 70.27649769585254, 'num': 548}}
+medgemma ct scan_spine
+{'abnormality': {'acc': 0.0, 'num': 2}, 'modality': {'acc': 62.06896551724138, 'acc w. hallu': 81.60919540229885, 'num': 87}, 'body_part': {'acc': 79.3103448275862, 'acc w. hallu': 89.65517241379311, 'num': 87}, 'entity': {'acc': 1.1494252873563218, 'acc w. hallu': 55.172413793103445, 'num': 87}, 'grounding': {'acc': 2.564102564102564, 'acc w. hallu': 64.1025641025641, 'num': 87}}
+medgemma mri_abdomen
+{'abnormality': {'acc': 42.857142857142854, 'num': 14}, 'modality': {'acc': 80.95238095238095, 'acc w. hallu': 96.42857142857143, 'num': 84}, 'body_part': {'acc': 86.90476190476191, 'acc w. hallu': 92.85714285714286, 'num': 84}, 'entity': {'acc': 1.1904761904761905, 'acc w. hallu': 59.523809523809526, 'num': 84}, 'grounding': {'acc': 1.5151515151515151, 'acc w. hallu': 72.72727272727273, 'num': 84}}
+medgemma mri_brain
+{'abnormality': {'acc': 42.857142857142854, 'num': 56}, 'modality': {'acc': 92.04946996466431, 'acc w. hallu': 92.226148409894, 'num': 566}, 'body_part': {'acc': 93.28621908127208, 'acc w. hallu': 93.46289752650176, 'num': 566}, 'entity': {'acc': 2.1238938053097343, 'acc w. hallu': 55.75221238938053, 'num': 568}, 'grounding': {'acc': 1.70316301703163, 'acc w. hallu': 64.23357664233576, 'num': 568}}
+medgemma mri_chest
+{'abnormality': {'acc': 37.5, 'num': 8}, 'modality': {'acc': 80.0, 'acc w. hallu': 82.5, 'num': 40}, 'body_part': {'acc': 27.500000000000004, 'acc w. hallu': 45.0, 'num': 40}, 'entity': {'acc': 2.5, 'acc w. hallu': 30.0, 'num': 40}, 'grounding': {'acc': 0.0, 'acc w. hallu': 58.82352941176471, 'num': 40}}
+medgemma mri_spine
+{'abnormality': {'acc': 50.0, 'num': 36}, 'modality': {'acc': 94.44444444444444, 'acc w. hallu': 95.06172839506173, 'num': 324}, 'body_part': {'acc': 88.58024691358025, 'acc w. hallu': 94.44444444444444, 'num': 324}, 'entity': {'acc': 0.0, 'acc w. hallu': 33.95061728395062, 'num': 324}, 'grounding': {'acc': 0.0, 'acc w. hallu': 46.95945945945946, 'num': 324}}
+medgemma x-ray_abdomen
+{'abnormality': {'acc': 45.0, 'num': 20}, 'modality': {'acc': 94.82758620689656, 'acc w. hallu': 97.41379310344827, 'num': 232}, 'body_part': {'acc': 63.36206896551724, 'acc w. hallu': 89.22413793103449, 'num': 232}, 'entity': {'acc': 2.586206896551724, 'acc w. hallu': 71.55172413793103, 'num': 232}, 'grounding': {'acc': 0.0, 'acc w. hallu': 75.70621468926554, 'num': 232}}
+medgemma x-ray_brain
+{'abnormality': {'acc': 50.0, 'num': 6}, 'modality': {'acc': 74.68354430379746, 'acc w. hallu': 89.87341772151899, 'num': 79}, 'body_part': {'acc': 82.27848101265823, 'acc w. hallu': 86.07594936708861, 'num': 79}, 'entity': {'acc': 1.2658227848101267, 'acc w. hallu': 70.88607594936708, 'num': 79}, 'grounding': {'acc': 6.666666666666667, 'acc w. hallu': 71.11111111111111, 'num': 79}}
+medgemma x-ray_chest
+{'abnormality': {'acc': 46.663244353182755, 'num': 1948}, 'modality': {'acc': 97.05033664636102, 'acc w. hallu': 97.40301378647003, 'num': 3119}, 'body_part': {'acc': 83.91025641025641, 'acc w. hallu': 97.33974358974359, 'num': 3120}, 'entity': {'acc': 4.455128205128205, 'acc w. hallu': 47.756410256410255, 'num': 3125}, 'grounding': {'acc': 4.79313824419778, 'acc w. hallu': 63.72351160443996, 'num': 3125}}
+medgemma x-ray_spine
+{'abnormality': {'acc': 50.0, 'num': 24}, 'modality': {'acc': 94.55445544554455, 'acc w. hallu': 97.02970297029702, 'num': 202}, 'body_part': {'acc': 82.67326732673267, 'acc w. hallu': 91.58415841584159, 'num': 202}, 'entity': {'acc': 1.9801980198019802, 'acc w. hallu': 63.86138613861386, 'num': 202}, 'grounding': {'acc': 1.7241379310344827, 'acc w. hallu': 71.26436781609196, 'num': 202}}
+==============================
+=== Printing accuracy aggregated over modality-organ ===
+medgemma {'abnormality': {'acc': 46.6696269982238, 'num': 2252}, 'modality': {'acc': 90.43160901301174, 'num': 6302, 'acc w. hallu': 94.85877499206602}, 'body_part': {'acc': 84.56045699777849, 'num': 6302, 'acc w. hallu': 94.9857188194224}, 'entity': {'acc': 3.1102834874906162, 'num': 6312, 'acc w. hallu': 52.85547344879959}, 'grounding': {'acc': 3.1623816145814203, 'num': 6312, 'acc w. hallu': 64.50537231896351}}
+==============================
+=== Printing overall accuracy further aggregated over question types ===
+medgemma:
+  acc w. adv. pair: 45.40%
+  acc w.o. adv. pair: 76.79%
+  acc. diff: 31.39%
+==============================
