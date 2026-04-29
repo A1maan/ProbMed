@@ -1,0 +1,1127 @@
+[
+  {
+    "image": "probmed/ccd24c4b2d87e592e85e04a62875d9b3d6356681_2-Figure2-1.png",
+    "correct_q": "Is this an MRI? (please answer yes/no)",
+    "wrong_q": "Is epidural haematoma present in the given spine mri? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "yes",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/00029588_004.png",
+    "correct_q": "Is this a Chest X-Ray? (please answer yes/no)",
+    "wrong_q": "Is pneumonia present in the given chest x-ray? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/679c0ed9a7a35706041b7d6ce7c5018aa860b078_2-Figure1-1.png",
+    "correct_q": "Is this an MRI? (please answer yes/no)",
+    "wrong_q": "Is slight signal changes present in the given spine mri? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "yes"
+  },
+  {
+    "image": "probmed/67539587541a8725b843f0421cf1a82adf235ea7_2-Figure1-1.png",
+    "correct_q": "Is this a CT Scan? (please answer yes/no)",
+    "wrong_q": "Is destructive lesions present in the given abdomen ct scan? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/6e656525f5062d843a6c63466e51e17fcc6355ff_2-Figure1-1.png",
+    "correct_q": "Is this a CT Scan? (please answer yes/no)",
+    "wrong_q": "Is this an MRI? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/00029894_000.png",
+    "correct_q": "Is this a Chest X-Ray? (please answer yes/no)",
+    "wrong_q": "Is nodule present in the given chest x-ray? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "yes"
+  },
+  {
+    "image": "probmed/c77b300b74a36ffeb324406dffbda45f16d74cff_2-Figure1-1.png",
+    "correct_q": "Is this an X-Ray? (please answer yes/no)",
+    "wrong_q": "Is three pacing leads present in the given chest x-ray? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "yes",
+    "correct_pred": "no",
+    "wrong_pred": "yes"
+  },
+  {
+    "image": "probmed/00012114_009.png",
+    "correct_q": "Is this a Chest X-Ray? (please answer yes/no)",
+    "wrong_q": "Does this x-ray show any abnormality of the chest? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/b4c3e94c46c3cf836364dc8a48ad602ff6584824_2-Figure1-1.png",
+    "correct_q": "Is this a CT Scan? (please answer yes/no)",
+    "wrong_q": "Is associated marked surrounding edema present in the given brain ct scan? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/bddd2eb8656fd2e77225c4992bb9198342848a2d_3-Figure3-1.png",
+    "correct_q": "Is this a CT Scan? (please answer yes/no)",
+    "wrong_q": "Is enhanced thickened cecal wall present in the given abdomen ct scan? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "yes",
+    "correct_pred": "no",
+    "wrong_pred": "yes"
+  },
+  {
+    "image": "probmed/00026071_005.png",
+    "correct_q": "Is this a Chest X-Ray? (please answer yes/no)",
+    "wrong_q": "Does this x-ray show any abnormality of the chest? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/688b9665a18644c0b7556493e52675f73c079b9c_2-Figure2-1.png",
+    "correct_q": "Is this an MRI? (please answer yes/no)",
+    "wrong_q": "Is abnormally increased signal intensity present in the given brain mri? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "yes",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/00003469_000.png",
+    "correct_q": "Is this a Chest X-Ray? (please answer yes/no)",
+    "wrong_q": "Does this x-ray show any abnormality of the chest? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/f97f5eeeffefdb221daae9c9bac89d2738ed55ab_2-Figure1-1.png",
+    "correct_q": "Is this a CT Scan? (please answer yes/no)",
+    "wrong_q": "Is increased moderate left pleural effusion present in the given chest ct scan? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "yes"
+  },
+  {
+    "image": "probmed/4edbac6b282f9bccbeb75ac6afe739c1822e8483_4-Figure2-1.png",
+    "correct_q": "Is this an X-Ray? (please answer yes/no)",
+    "wrong_q": "Is prevertebral air present in the given brain x-ray? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/daaad023714267b8eccb6d53bcbfd7c5adff26a8_2-Figure2-1.png",
+    "correct_q": "Is this an X-Ray? (please answer yes/no)",
+    "wrong_q": "Is this a CT Scan? (please answer yes/no)",
+    "correct_gt": "no",
+    "wrong_gt": "yes",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/5484865b94b158fd87ca653a1aef1b56b1bcab1d_2-Figure1-1.png",
+    "correct_q": "Is this an MRI? (please answer yes/no)",
+    "wrong_q": "Is hyperintense vasogenic edematous lesions present in the given brain mri? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/00004344_014.png",
+    "correct_q": "Is this a Chest X-Ray? (please answer yes/no)",
+    "wrong_q": "Is edema present in the given chest x-ray? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/4072033be3246985cf3d84b57f15f499a2781ad8_3-Figure3-1.png",
+    "correct_q": "Is this an MRI? (please answer yes/no)",
+    "wrong_q": "Does this show a Brain? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/d5ab67fbf0eac0c0a65372ee8e327a4c9ab4cf9e_2-Figure1-1.png",
+    "correct_q": "Is this a CT Scan? (please answer yes/no)",
+    "wrong_q": "Is this an X-Ray? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/00023058_004.png",
+    "correct_q": "Is this a Chest X-Ray? (please answer yes/no)",
+    "wrong_q": "Is consolidation present in the given chest x-ray? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/00021277_012.png",
+    "correct_q": "Is this a Chest X-Ray? (please answer yes/no)",
+    "wrong_q": "Does this x-ray show any abnormality of the chest? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/e98839ea02b25ed7de19db287f33d7826a26108c_1-Figure1-1.png",
+    "correct_q": "Is this an X-Ray? (please answer yes/no)",
+    "wrong_q": "Does this show a Spine? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/51025ff469b36881f85e13451883da7d9044f150_3-Figure4-1.png",
+    "correct_q": "Is this an MRI? (please answer yes/no)",
+    "wrong_q": "Is high intensity lesion present in the given spine mri? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/7b1325685e3959a782a25dbd18fb139584f6fe39_2-Figure1-1.png",
+    "correct_q": "Is this an X-Ray? (please answer yes/no)",
+    "wrong_q": "Is extensive ossification present in the given chest x-ray? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "yes",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/7d655d67465fa202c28941c6cd3d3734f71ca890_3-Figure2-1.png",
+    "correct_q": "Is this an X-Ray? (please answer yes/no)",
+    "wrong_q": "Is well circumscribed mass present in the given chest x-ray? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "yes"
+  },
+  {
+    "image": "probmed/00013557_007.png",
+    "correct_q": "Is this a Chest X-Ray? (please answer yes/no)",
+    "wrong_q": "Does this x-ray show any abnormality of the chest? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/ae1913fc94a7a5f52179daf387d1846545dcd29e_2-Figure1-1.png",
+    "correct_q": "Is this a CT Scan? (please answer yes/no)",
+    "wrong_q": "Is multiple pseudocyst formation present in the given abdomen ct scan? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/1e9619a0c9a0ac5bc75a497dea60425e0866e29e_2-Figure1-1.png",
+    "correct_q": "Is this an X-Ray? (please answer yes/no)",
+    "wrong_q": "Is apical fibrosis present in the given chest x-ray? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/00007795_003.png",
+    "correct_q": "Is this a Chest X-Ray? (please answer yes/no)",
+    "wrong_q": "Does this x-ray show any abnormality of the chest? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/d75c45778c00a056d3acf65cfd73176099499503_2-Figure1-1.png",
+    "correct_q": "Is this an MRI? (please answer yes/no)",
+    "wrong_q": "Is Spinal cord decompression present in the given spine mri? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/f37c55a472d4ceb0c1b47383cc21d4cd7ff4fa4a_7-Figure1-1.png",
+    "correct_q": "Is this an X-Ray? (please answer yes/no)",
+    "wrong_q": "Does this show a Spine? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/9d91a90854e3c29d44f6f30b4dbd6ad046d4cfcc_2-Figure1-1.png",
+    "correct_q": "Is this a CT Scan? (please answer yes/no)",
+    "wrong_q": "Is lesion present in the given brain ct scan? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/5efce768cdb0c21e9405fb3c45c08ce166ba2f4e_2-Figure2-1.png",
+    "correct_q": "Is this a CT Scan? (please answer yes/no)",
+    "wrong_q": "Is this an X-Ray? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/a82f9260928d5c0661117791f945952fb6b21c5d_2-Figure1-1.png",
+    "correct_q": "Is this an MRI? (please answer yes/no)",
+    "wrong_q": "Is this a CT Scan? (please answer yes/no)",
+    "correct_gt": "no",
+    "wrong_gt": "yes",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/db4f357a5c02cd3c2250a589f1be2ebe1ad8c22a_2-Figure1-1.png",
+    "correct_q": "Is this a CT Scan? (please answer yes/no)",
+    "wrong_q": "Is resolving intraventricular hemorrhage present in the given brain ct scan? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/258f3efa873a8ff8910e61fa6e1af79818238149_1-Figure2-1.png",
+    "correct_q": "Is this an X-Ray? (please answer yes/no)",
+    "wrong_q": "Is impending fracture of the port catheter present in the given spine x-ray? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/b5aa14c9d8903e04a4c3f5b8a58dfe4d6b2c54b3_3-Figure3-1.png",
+    "correct_q": "Is this an MRI? (please answer yes/no)",
+    "wrong_q": "Does this show a Spine? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/9ec265b787939e49e89b862d34f5d9d2b281c064_2-Figure2-1.png",
+    "correct_q": "Is this an MRI? (please answer yes/no)",
+    "wrong_q": "Is abnormal signal changes of the spinal cord present in the given spine mri? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/619ac62d5e7d5bc60f7c8b17ae08b73644e441be_2-Figure1-1.png",
+    "correct_q": "Is this an X-Ray? (please answer yes/no)",
+    "wrong_q": "Is loss of lung fields present in the given chest x-ray? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/00030413_003.png",
+    "correct_q": "Is this an MRI? (please answer yes/no)",
+    "wrong_q": "Is consolidation present in the given chest x-ray? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "yes",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/d0d33a858b48aaeec3660dcf431a316dd98b9087_2-Figure1-1.png",
+    "correct_q": "Is this an X-Ray? (please answer yes/no)",
+    "wrong_q": "Is Peripheral nodular shadows present in the given chest x-ray? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/a162b60a9dfe81ff0d2b63dd98cda84554a242b2_2-Figure1-1.png",
+    "correct_q": "Is this an X-Ray? (please answer yes/no)",
+    "wrong_q": "Is tip of the catheter placed in the main right bronchus present in the given abdomen x-ray? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "yes"
+  },
+  {
+    "image": "probmed/8bbb3bd1e3cfe21fcfdc3c49016d7c08d019c071_2-Figure3-1.png",
+    "correct_q": "Is this an MRI? (please answer yes/no)",
+    "wrong_q": "Is this a CT Scan? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/3c2bd3a1fb99d4ec2377710d35c338353b6b144d_1-Figure1-1.png",
+    "correct_q": "Is this an X-Ray? (please answer yes/no)",
+    "wrong_q": "Is old scar of pulmonary tuberculosis present in the given chest x-ray? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "yes"
+  },
+  {
+    "image": "probmed/0e678d73849e2882aec72c54894bf25892b55f98_2-Figure1-1.png",
+    "correct_q": "Is this an X-Ray? (please answer yes/no)",
+    "wrong_q": "Is veryfine, sand like micronodules of calcific density present in the given chest x-ray? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "yes"
+  },
+  {
+    "image": "probmed/e35c96b5d022fc8f28a94d2ea2942a19851a08a9_2-Figure2-1.png",
+    "correct_q": "Is this an MRI? (please answer yes/no)",
+    "wrong_q": "Is mass effect from the cerebellar swelling present in the given brain mri? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "yes"
+  },
+  {
+    "image": "probmed/00003393_044.png",
+    "correct_q": "Is this a Chest X-Ray? (please answer yes/no)",
+    "wrong_q": "Does this x-ray show any abnormality of the chest? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/73dbaa0975a861209701fd3aeeae19f076d08514_3-Figure1-1.png",
+    "correct_q": "Is this an MRI? (please answer yes/no)",
+    "wrong_q": "Is large chronic ischaemic lesion present in the given brain mri? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "yes",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/bc711c4e036e3c8659b0de0c3ac6143c25aab64d_2-Figure3-1.png",
+    "correct_q": "Is this a CT Scan? (please answer yes/no)",
+    "wrong_q": "Does this show a Spine? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/264f7bf2f13873f4788c583d215867af5b58bbfb_2-Figure1-1.png",
+    "correct_q": "Is this a CT Scan? (please answer yes/no)",
+    "wrong_q": "Is extensive intraventricular hemorrhage present in the given brain ct scan? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "yes",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/55ddbc9a7d94a1a85bad61f5afb585d65d1d8953_2-Figure1-1.png",
+    "correct_q": "Is this an X-Ray? (please answer yes/no)",
+    "wrong_q": "Is gas present in the given chest x-ray? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "yes",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/62800312aa7bbfd3f289197bd493ad9d39901c59_3-Figure1-1.png",
+    "correct_q": "Is this an X-Ray? (please answer yes/no)",
+    "wrong_q": "Is 2-cm hyperintense cystic lesion present in the given chest mri? (please answer yes/no)",
+    "correct_gt": "no",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "yes"
+  },
+  {
+    "image": "probmed/2fc900b1cdf59b98b901a13ef7ed0161376a09c8_5-Figure1-1.png",
+    "correct_q": "Is this a CT Scan? (please answer yes/no)",
+    "wrong_q": "Is solid mass present in the given abdomen ct scan? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "yes",
+    "correct_pred": "no",
+    "wrong_pred": "yes"
+  },
+  {
+    "image": "probmed/6079cc5c8a5076598d79402139b5b4d3ff21336f_2-Figure1-1.png",
+    "correct_q": "Is this a CT Scan? (please answer yes/no)",
+    "wrong_q": "Is Gas shadow present in the given abdomen ct scan? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/7907eedef8ea9dac8e7d57874f0fa9544ba83930_2-Figure1-1.png",
+    "correct_q": "Is this an X-Ray? (please answer yes/no)",
+    "wrong_q": "Is Insertion of PD catheter present in the given abdomen x-ray? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/96d3a7e968c11e66cc09287a5cc9af30f5c4ff80_2-Figure2-1.png",
+    "correct_q": "Is this a CT Scan? (please answer yes/no)",
+    "wrong_q": "Does this show a Chest? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "yes",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/25617dd30e5e86e32ad1df1fd9eda64facb3792a_2-Figure1-1.png",
+    "correct_q": "Is this an X-Ray? (please answer yes/no)",
+    "wrong_q": "Is right paramediastinal mass present in the given chest x-ray? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "yes"
+  },
+  {
+    "image": "probmed/83c9ffdd688f3102ab5043a9eeb0fd4a90b994e8_3-Figure2-1.png",
+    "correct_q": "Is this an MRI? (please answer yes/no)",
+    "wrong_q": "Is heterotopic gray matter present in the given brain mri? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/34ef5e766da37ce08125fb149d120f0914a6db21_3-Figure2-1.png",
+    "correct_q": "Is this an X-Ray? (please answer yes/no)",
+    "wrong_q": "Is generalized demineralization of bones present in the given spine x-ray? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "yes"
+  },
+  {
+    "image": "probmed/00025521_003.png",
+    "correct_q": "Is this a Chest X-Ray? (please answer yes/no)",
+    "wrong_q": "Is nodule present in the given chest x-ray? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "yes"
+  },
+  {
+    "image": "probmed/00022893_000.png",
+    "correct_q": "Is this a Chest X-Ray? (please answer yes/no)",
+    "wrong_q": "Does this show a Spine? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/ef0f587bb175f8316a3a5ce8a72631b47a10114c_2-Figure2-1.png",
+    "correct_q": "Is this an X-Ray? (please answer yes/no)",
+    "wrong_q": "Is resolution of previously seen elevated right hemidiaphragm present in the given chest x-ray? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "yes"
+  },
+  {
+    "image": "probmed/00020482_011.png",
+    "correct_q": "Is this a Chest X-Ray? (please answer yes/no)",
+    "wrong_q": "Is consolidation present in the given chest x-ray? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "yes",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/00002919_001.png",
+    "correct_q": "Is this a Chest X-Ray? (please answer yes/no)",
+    "wrong_q": "Does this x-ray show any abnormality of the chest? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/3bc81630756b71804664fb3f5513f79b89f82d3f_2-Figure1-1.png",
+    "correct_q": "Is this a CT Scan? (please answer yes/no)",
+    "wrong_q": "Does this show a Spine? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/605cae27d04022a3b5e7c3af2e044533939bb7e6_2-Figure3-1.png",
+    "correct_q": "Is this a CT Scan? (please answer yes/no)",
+    "wrong_q": "Is large cystic lesion present in the given abdomen ct scan? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/ef3dc0cc2155b7a1c77e30d8737de8c1ed67a676_1-Figure1-1.png",
+    "correct_q": "Is this an X-Ray? (please answer yes/no)",
+    "wrong_q": "Is chest abnormal mass present in the given chest x-ray? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/53011e8bcdaf5e8c9023cce6756f6fbfc0fab54a_2-Figure2-1.png",
+    "correct_q": "Is this a CT Scan? (please answer yes/no)",
+    "wrong_q": "Is this an X-Ray? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/00007095_002.png",
+    "correct_q": "Is this a Chest X-Ray? (please answer yes/no)",
+    "wrong_q": "Does this x-ray show any abnormality of the chest? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/22acd978bbc74e18ec0a1382c3c1de05e18e8c18_2-Figure1-1.png",
+    "correct_q": "Is this a CT Scan? (please answer yes/no)",
+    "wrong_q": "Is giant GIST present in the given abdomen ct scan? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "yes",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/00004342_050.png",
+    "correct_q": "Is this a Chest X-Ray? (please answer yes/no)",
+    "wrong_q": "Is emphysema present in the given chest x-ray? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/ab0f42191ffc58133eb669a074f61202559c0c7d_2-FigureI-1.png",
+    "correct_q": "Is this an X-Ray? (please answer yes/no)",
+    "wrong_q": "In the given chest x-ray, is veryfine, sand like micronodules of calcific density present in the left infraclavicular region? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "yes"
+  },
+  {
+    "image": "probmed/00011553_032.png",
+    "correct_q": "Is this a Chest X-Ray? (please answer yes/no)",
+    "wrong_q": "Does this x-ray show any abnormality of the chest? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/4baf8ecce258339e1a89a9d9f0f19081f5d2535c_2-Figure1-1.png",
+    "correct_q": "Is this a CT Scan? (please answer yes/no)",
+    "wrong_q": "Is traction bronchiectasia present in the given chest ct scan? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "yes"
+  },
+  {
+    "image": "probmed/00021201_010.png",
+    "correct_q": "Is this a Chest X-Ray? (please answer yes/no)",
+    "wrong_q": "Is emphysema present in the given chest x-ray? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/1d437345c1883560352aa44622e9711a6ff08ff3_1-Figure1-1.png",
+    "correct_q": "Is this a CT Scan? (please answer yes/no)",
+    "wrong_q": "Is this an X-Ray? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/065e34b0a7b0185517ec66370b1b4584001141e8_2-Figure2-1.png",
+    "correct_q": "Is this a CT Scan? (please answer yes/no)",
+    "wrong_q": "Is homogenously enhancing mass lesion present in the given abdomen ct scan? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "yes"
+  },
+  {
+    "image": "probmed/141aa951581bef330ff7c5c769746e5702ae0aa0_2-Figure2-1.png",
+    "correct_q": "Is this an MRI? (please answer yes/no)",
+    "wrong_q": "Is paraspinal abscess present in the given spine mri? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "yes",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/00002106_000.png",
+    "correct_q": "Is this a Chest X-Ray? (please answer yes/no)",
+    "wrong_q": "Is mass present in the given chest x-ray? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "yes",
+    "correct_pred": "no",
+    "wrong_pred": "yes"
+  },
+  {
+    "image": "probmed/f10e92a8cbe115aea28608b1b9b9afa0c4d43dce_2-Figure3-1.png",
+    "correct_q": "Is this a CT Scan? (please answer yes/no)",
+    "wrong_q": "Does this ct scan show any abnormality of the abdomen? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/9c995e756337b6e78951d91a0493c315e47e1c77_4-Figure3-1.png",
+    "correct_q": "Is this an X-Ray? (please answer yes/no)",
+    "wrong_q": "Is radiologic healing post alendronate therapy present in the given brain x-ray? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "yes",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/00021796_000.png",
+    "correct_q": "Does this show a Brain? (please answer yes/no)",
+    "wrong_q": "Is emphysema present in the given chest x-ray? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/a124c386df5a756b97ba2623ae939f972ee37c54_1-Figure1-1.png",
+    "correct_q": "Is this an X-Ray? (please answer yes/no)",
+    "wrong_q": "Does this x-ray show any abnormality of the chest? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/8dc1c69b309a495a976c64fd7326b872576cfeb0_2-Figure2-1.png",
+    "correct_q": "Is this an MRI? (please answer yes/no)",
+    "wrong_q": "Is hyper-intense lesion present in the given brain mri? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "yes",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/9279d2b50f6cc82366a3e13fa77ca63c3be72372_9-Figure8-1.png",
+    "correct_q": "Is this an X-Ray? (please answer yes/no)",
+    "wrong_q": "Is None present in the given chest x-ray? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "yes",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/036cee5090b8ba97efa78ae20c75d71b5ab580bd_2-Figure2-1.png",
+    "correct_q": "Is this a CT Scan? (please answer yes/no)",
+    "wrong_q": "Is decreased cerebral herniation present in the given brain ct scan? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "yes"
+  },
+  {
+    "image": "probmed/06051e1b46ccfd4dd65400f93a242d66f7c00e98_3-Figure2-1.png",
+    "correct_q": "Is this an MRI? (please answer yes/no)",
+    "wrong_q": "Is this an X-Ray? (please answer yes/no)",
+    "correct_gt": "no",
+    "wrong_gt": "yes",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/00028628_005.png",
+    "correct_q": "Is this a Chest X-Ray? (please answer yes/no)",
+    "wrong_q": "Does this x-ray show any abnormality of the chest? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/53382f9e2a0ebce217c53fb51402ad8b1a22af34_2-Figure3-1.png",
+    "correct_q": "Is this an X-Ray? (please answer yes/no)",
+    "wrong_q": "Is bilateral fine reticular nodular shadowing present in the given chest x-ray? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "yes"
+  },
+  {
+    "image": "probmed/6b9eb0f613803841bde6089698fa1ac0b59b5157_3-Figure3-1.png",
+    "correct_q": "Does this show a Chest? (please answer yes/no)",
+    "wrong_q": "Is this a CT Scan? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "yes",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/d5127170321b0e9c687cbcb7df3f8a01fdb2c166_2-Figure2-1.png",
+    "correct_q": "Is this an MRI? (please answer yes/no)",
+    "wrong_q": "Is fresh bleeding focus present in the given brain mri? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/ea7813726e5c8ee3c0b80b18841f856ea801ebc4_1-Figure3-1.png",
+    "correct_q": "Is this a CT Scan? (please answer yes/no)",
+    "wrong_q": "Does this show a Spine? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/c4b134c6af9666146f3308d9497c729d83ba4131_2-Figure1-1.png",
+    "correct_q": "Is this a CT Scan? (please answer yes/no)",
+    "wrong_q": "Is tramline and bronchial thickening present in the given chest ct scan? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "yes"
+  },
+  {
+    "image": "probmed/00017243_010.png",
+    "correct_q": "Is this a Chest X-Ray? (please answer yes/no)",
+    "wrong_q": "Does this show a Spine? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/aa095e9ccae399a7e100f1322531f2a63ced6490_6-Figure1-1.png",
+    "correct_q": "Is this a CT Scan? (please answer yes/no)",
+    "wrong_q": "Is small-intestine herniation present in the given abdomen ct scan? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "yes",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/3323ace322082e35f91bc1fb5edf2201cfcf256f_3-Figure3-1.png",
+    "correct_q": "Is this a CT Scan? (please answer yes/no)",
+    "wrong_q": "Is multifocal contrast filling defects present in the given chest ct scan? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "yes"
+  },
+  {
+    "image": "probmed/ca8b060e842627a59468e9ac1fd1081eddbe9e05_1-Figure1-1.png",
+    "correct_q": "Is this an X-Ray? (please answer yes/no)",
+    "wrong_q": "Is total fat content present in the given abdomen x-ray? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/00017178_007.png",
+    "correct_q": "Is this a Chest X-Ray? (please answer yes/no)",
+    "wrong_q": "Is mass present in the given chest x-ray? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "yes"
+  },
+  {
+    "image": "probmed/6460a7e1c84954e9e2eec2a0560061209b9afeea_2-Figure1-1.png",
+    "correct_q": "Is this an X-Ray? (please answer yes/no)",
+    "wrong_q": "Is progression of the basilar-predominant interlobular septal thickening present in the given chest x-ray? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "yes"
+  },
+  {
+    "image": "probmed/cf1a0103ed6de9fc024248a173e1f4dd24132436_2-FigureI-1.png",
+    "correct_q": "Is this an X-Ray? (please answer yes/no)",
+    "wrong_q": "Does this show an Abdomen? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/ee2a56dac4dfa67687544a37f387565b02d1649a_1-Figure1-1.png",
+    "correct_q": "Is this an MRI? (please answer yes/no)",
+    "wrong_q": "Is high signal intensity present in the given brain mri? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/d2e1093ce416703dc315d04f1100e552d09770ef_2-Figure2-1.png",
+    "correct_q": "Is this a CT Scan? (please answer yes/no)",
+    "wrong_q": "Does this show a Spine? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/f49051fe49e2abedeec3562bf7ace80b484ccfb0_2-FigureI-1.png",
+    "correct_q": "Is this an X-Ray? (please answer yes/no)",
+    "wrong_q": "Is hyperlucency present in the given chest x-ray? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "yes"
+  },
+  {
+    "image": "probmed/f723e6955a7e088a0c81058dc3739393835d4f33_4-Figure10-1.png",
+    "correct_q": "Is this a CT Scan? (please answer yes/no)",
+    "wrong_q": "Is resolution of the hematoma present in the given brain ct scan? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "yes",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/00010092_018.png",
+    "correct_q": "Is this a Chest X-Ray? (please answer yes/no)",
+    "wrong_q": "Is edema present in the given chest x-ray? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/37d1c3f3ab842d24eee784f6d7ab76717d964f67_4-Figure8-1.png",
+    "correct_q": "Is this a CT Scan? (please answer yes/no)",
+    "wrong_q": "Is improvement of the involved areas present in the given abdomen ct scan? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "yes",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/00023311_002.png",
+    "correct_q": "Is this a Chest X-Ray? (please answer yes/no)",
+    "wrong_q": "Does this x-ray show any abnormality of the chest? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/b2e60a681e3a596976f75ca23dc8125978c8ee8b_2-Figure2-1.png",
+    "correct_q": "Is this an MRI? (please answer yes/no)",
+    "wrong_q": "Is moderate cerebellar atrophy present in the given brain mri? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "yes",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/cecc1af374ebbe4c15c46832a5bc261600914061_2-Figure2-1.png",
+    "correct_q": "Is this an MRI? (please answer yes/no)",
+    "wrong_q": "Is metastasis present in the given abdomen mri? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/00030408_013.png",
+    "correct_q": "Is this a Chest X-Ray? (please answer yes/no)",
+    "wrong_q": "Is pneumonia present in the given chest x-ray? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/76321b7684ea7b6c26a31e702dafafd6957a2488_2-Figure1-1.png",
+    "correct_q": "Is this an X-Ray? (please answer yes/no)",
+    "wrong_q": "Is this a CT Scan? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/b00615afdb35d6c7bb761abca4077a8074d1ee7c_2-Figure4-1.png",
+    "correct_q": "Is this an MRI? (please answer yes/no)",
+    "wrong_q": "Is compression of the thecal sac present in the given spine mri? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "yes"
+  },
+  {
+    "image": "probmed/4fbf4ad2880c2ce4bff16681b5bd59f1508f6a87_3-Figure2-1.png",
+    "correct_q": "Is this an MRI? (please answer yes/no)",
+    "wrong_q": "Is increase of signal in T2/Flair present in the given brain mri? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "yes"
+  },
+  {
+    "image": "probmed/798ee6e93de1ab3258376974f4c55bc8cca0fae4_2-Figure3-1.png",
+    "correct_q": "Is this an MRI? (please answer yes/no)",
+    "wrong_q": "Is myelination present in the given brain mri? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/997c620cbaa42ba6f5f1247881e4dc4538970a66_2-Figure1-1.png",
+    "correct_q": "Is this a CT Scan? (please answer yes/no)",
+    "wrong_q": "Is Gross ascites present in the given abdomen ct scan? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/93e913575519c14c27ea1fe0403fc42a43f8bf30_1-Figure1-1.png",
+    "correct_q": "Is this an X-Ray? (please answer yes/no)",
+    "wrong_q": "Is reduction in lung volume present in the given chest x-ray? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "yes"
+  },
+  {
+    "image": "probmed/eab90773314af432e7cd7fd5b1197bc491ab33bd_4-Figure6-1.png",
+    "correct_q": "Is this an MRI? (please answer yes/no)",
+    "wrong_q": "Is this a CT Scan? (please answer yes/no)",
+    "correct_gt": "no",
+    "wrong_gt": "yes",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/00014116_009.png",
+    "correct_q": "Is this a Chest X-Ray? (please answer yes/no)",
+    "wrong_q": "Is nodule present in the given chest x-ray? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "yes",
+    "correct_pred": "no",
+    "wrong_pred": "yes"
+  },
+  {
+    "image": "probmed/2b9a2a9b446b234db7b34b4386b3add1b3b49cb2_2-Figure1-1.png",
+    "correct_q": "Is this an X-Ray? (please answer yes/no)",
+    "wrong_q": "Is tic-tac sign packets present in the given abdomen x-ray? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "yes",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/9f38bd0093165c17096a5646e67e440e3835ed7f_17-Figure8-1.png",
+    "correct_q": "Is this an X-Ray? (please answer yes/no)",
+    "wrong_q": "Is this an MRI? (please answer yes/no)",
+    "correct_gt": "no",
+    "wrong_gt": "yes",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/466073e4d015d2a21ae012c00458fa152802aa43_2-Figure2-1.png",
+    "correct_q": "Is this a CT Scan? (please answer yes/no)",
+    "wrong_q": "Is Regions with poor contrast enhancement present in the given abdomen ct scan? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "yes",
+    "correct_pred": "no",
+    "wrong_pred": "yes"
+  },
+  {
+    "image": "probmed/cb15da8e5bd43d3386b9bbc103d75aad6b8fed43_5-Figure4-1.png",
+    "correct_q": "Is this an MRI? (please answer yes/no)",
+    "wrong_q": "Does this show a Spine? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/156dab34cf000519bf9469594b49570f0bfe68dc_4-Figure4-1.png",
+    "correct_q": "Is this an X-Ray? (please answer yes/no)",
+    "wrong_q": "Is this a CT Scan? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "no"
+  },
+  {
+    "image": "probmed/7790d935dd6eb08b7771010154051430491e1ba9_1-Figure1-1.png",
+    "correct_q": "Is this an X-Ray? (please answer yes/no)",
+    "wrong_q": "In the given chest x-ray, is left chest pathology present in the left pulmonary hilus? (please answer yes/no)",
+    "correct_gt": "yes",
+    "wrong_gt": "no",
+    "correct_pred": "no",
+    "wrong_pred": "yes"
+  }
+]

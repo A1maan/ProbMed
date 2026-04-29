@@ -1,0 +1,54 @@
+{
+  "model": "chexagent",
+  "layer": 21,
+  "epochs": 10,
+  "lr": 0.0001,
+  "hidden_size": 2560,
+  "gt_only_yes_no_rates": {
+    "raw_yes_rate": 0.6449609652235628,
+    "raw_no_rate": 0.20816326530612245,
+    "corrected_yes_rate": 0.6902058197303051,
+    "corrected_no_rate": 0.2530612244897959
+  },
+  "results": {
+    "vector_correction": {
+      "overall": 0.7259072755686751,
+      "gt_yes": 0.6902058197303051,
+      "gt_no": 0.7601156069364162,
+      "adversarial": 0.7606883093844243,
+      "adv_paired": 0.5124860231084607,
+      "adv_wo_pair": 0.6843086097651883,
+      "n_total": 11518,
+      "n_gt_yes": 5636,
+      "n_gt_no": 5882,
+      "n_adversarial": 5637,
+      "n_pairs": 5366
+    },
+    "raw_model": {
+      "overall": 0.5118944261156451,
+      "gt_yes": 0.6449609652235628,
+      "gt_no": 0.38439306358381503,
+      "adversarial": 0.36668440659925494,
+      "adv_paired": 0.0,
+      "adv_wo_pair": 0.6546775997018263,
+      "n_total": 11518,
+      "n_gt_yes": 5636,
+      "n_gt_no": 5882,
+      "n_adversarial": 5637,
+      "n_pairs": 5366
+    },
+    "category_bias": {
+      "overall": 0.6877061989928807,
+      "gt_yes": 0.7134492547906317,
+      "gt_no": 0.6630397823869432,
+      "adversarial": 0.6668440659925492,
+      "adv_paired": 0.46011926947446885,
+      "adv_wo_pair": 0.704621692135669,
+      "n_total": 11518,
+      "n_gt_yes": 5636,
+      "n_gt_no": 5882,
+      "n_adversarial": 5637,
+      "n_pairs": 5366
+    }
+  }
+}

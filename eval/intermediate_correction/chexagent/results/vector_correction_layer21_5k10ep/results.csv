@@ -1,0 +1,4 @@
+method,overall,gt_yes,gt_no,adversarial,adv_paired,adv_wo_pair
+vector_correction,0.7259,0.6902,0.7601,0.7607,0.5125,0.6843
+raw_model,0.5119,0.6450,0.3844,0.3667,0.0000,0.6547
+category_bias,0.6877,0.7134,0.6630,0.6668,0.4601,0.7046

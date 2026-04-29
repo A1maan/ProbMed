@@ -1,0 +1,5 @@
+method,overall,gt_yes,gt_no,adversarial,adv_paired,adv_wo_pair
+raw_model,0.6696,0.9093,0.4398,0.4545,0.3893,0.9055
+bias,0.6871,0.6998,0.6749,0.6878,0.4611,0.6888
+logistic_regression,0.7787,0.7729,0.7843,0.7862,0.6249,0.7723
+correction,0.7408,0.7397,0.7419,0.7408,0.5496,0.7365

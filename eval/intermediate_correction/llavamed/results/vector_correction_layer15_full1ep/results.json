@@ -1,0 +1,54 @@
+{
+  "model": "llavamed",
+  "layer": 15,
+  "epochs": 1,
+  "lr": 0.0001,
+  "hidden_size": 4096,
+  "gt_only_yes_no_rates": {
+    "raw_yes_rate": 0.5745209368346345,
+    "raw_no_rate": 0.20816326530612245,
+    "corrected_yes_rate": 0.5789567068843151,
+    "corrected_no_rate": 0.1346938775510204
+  },
+  "results": {
+    "vector_correction": {
+      "overall": 0.7485674596284078,
+      "gt_yes": 0.5789567068843151,
+      "gt_no": 0.9110846650799048,
+      "adversarial": 0.9130743303175448,
+      "adv_paired": 0.5519940365262765,
+      "adv_wo_pair": 0.5969064480059635,
+      "n_total": 11518,
+      "n_gt_yes": 5636,
+      "n_gt_no": 5882,
+      "n_adversarial": 5637,
+      "n_pairs": 5366
+    },
+    "raw_model": {
+      "overall": 0.5155408925160618,
+      "gt_yes": 0.5745209368346345,
+      "gt_no": 0.45902754165249915,
+      "adversarial": 0.4445627106616995,
+      "adv_paired": 0.0,
+      "adv_wo_pair": 0.5717480432351845,
+      "n_total": 11518,
+      "n_gt_yes": 5636,
+      "n_gt_no": 5882,
+      "n_adversarial": 5637,
+      "n_pairs": 5366
+    },
+    "category_bias": {
+      "overall": 0.7154019795103317,
+      "gt_yes": 0.6871894960965224,
+      "gt_no": 0.7424345460727644,
+      "adversarial": 0.7450771687067589,
+      "adv_paired": 0.5272083488632128,
+      "adv_wo_pair": 0.693812896011927,
+      "n_total": 11518,
+      "n_gt_yes": 5636,
+      "n_gt_no": 5882,
+      "n_adversarial": 5637,
+      "n_pairs": 5366
+    }
+  }
+}

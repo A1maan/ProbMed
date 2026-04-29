@@ -1,0 +1,15 @@
+{
+  "best_layer": 21,
+  "best_accuracy": 0.895,
+  "final_accuracy": 0.885,
+  "accuracy_drop": 0.010000000000000009,
+  "avg_correct_wrong_diff": 0.1896969696969697,
+  "max_divergence_layer": 0,
+  "max_divergence": 0.89,
+  "wrong_gt_yes_best_layer": 0,
+  "wrong_gt_yes_best_accuracy": 1.0,
+  "wrong_gt_yes_final_accuracy": 0.9,
+  "wrong_gt_no_best_layer": 19,
+  "wrong_gt_no_best_accuracy": 0.8444444444444444,
+  "wrong_gt_no_final_accuracy": 0.8
+}

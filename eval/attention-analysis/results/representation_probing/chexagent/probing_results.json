@@ -1,0 +1,309 @@
+{
+  "per_layer": [
+    {
+      "layer": 0,
+      "accuracy": 0.545,
+      "auc": 0.5,
+      "accuracy_correct_questions": 0.99,
+      "accuracy_wrong_questions": 0.1,
+      "accuracy_wrong_gt_yes": 1.0,
+      "accuracy_wrong_gt_no": 0.0
+    },
+    {
+      "layer": 1,
+      "accuracy": 0.67,
+      "auc": 0.7429176328258897,
+      "accuracy_correct_questions": 0.85,
+      "accuracy_wrong_questions": 0.49,
+      "accuracy_wrong_gt_yes": 0.7,
+      "accuracy_wrong_gt_no": 0.4666666666666667
+    },
+    {
+      "layer": 2,
+      "accuracy": 0.765,
+      "auc": 0.771247101522331,
+      "accuracy_correct_questions": 0.88,
+      "accuracy_wrong_questions": 0.65,
+      "accuracy_wrong_gt_yes": 0.8,
+      "accuracy_wrong_gt_no": 0.6333333333333333
+    },
+    {
+      "layer": 3,
+      "accuracy": 0.745,
+      "auc": 0.7815303962092953,
+      "accuracy_correct_questions": 0.89,
+      "accuracy_wrong_questions": 0.6,
+      "accuracy_wrong_gt_yes": 0.8,
+      "accuracy_wrong_gt_no": 0.5777777777777777
+    },
+    {
+      "layer": 4,
+      "accuracy": 0.74,
+      "auc": 0.7695332190745034,
+      "accuracy_correct_questions": 0.87,
+      "accuracy_wrong_questions": 0.61,
+      "accuracy_wrong_gt_yes": 0.7,
+      "accuracy_wrong_gt_no": 0.6
+    },
+    {
+      "layer": 5,
+      "accuracy": 0.765,
+      "auc": 0.7885875592297611,
+      "accuracy_correct_questions": 0.89,
+      "accuracy_wrong_questions": 0.64,
+      "accuracy_wrong_gt_yes": 0.7,
+      "accuracy_wrong_gt_no": 0.6333333333333333
+    },
+    {
+      "layer": 6,
+      "accuracy": 0.77,
+      "auc": 0.8092549652182679,
+      "accuracy_correct_questions": 0.9,
+      "accuracy_wrong_questions": 0.64,
+      "accuracy_wrong_gt_yes": 0.8,
+      "accuracy_wrong_gt_no": 0.6222222222222222
+    },
+    {
+      "layer": 7,
+      "accuracy": 0.795,
+      "auc": 0.8451456800080653,
+      "accuracy_correct_questions": 0.92,
+      "accuracy_wrong_questions": 0.67,
+      "accuracy_wrong_gt_yes": 0.5,
+      "accuracy_wrong_gt_no": 0.6888888888888889
+    },
+    {
+      "layer": 8,
+      "accuracy": 0.83,
+      "auc": 0.8780118963605201,
+      "accuracy_correct_questions": 0.91,
+      "accuracy_wrong_questions": 0.75,
+      "accuracy_wrong_gt_yes": 0.9,
+      "accuracy_wrong_gt_no": 0.7333333333333333
+    },
+    {
+      "layer": 9,
+      "accuracy": 0.83,
+      "auc": 0.9001915515676984,
+      "accuracy_correct_questions": 0.91,
+      "accuracy_wrong_questions": 0.75,
+      "accuracy_wrong_gt_yes": 0.7,
+      "accuracy_wrong_gt_no": 0.7555555555555555
+    },
+    {
+      "layer": 10,
+      "accuracy": 0.86,
+      "auc": 0.9164230265147697,
+      "accuracy_correct_questions": 0.96,
+      "accuracy_wrong_questions": 0.76,
+      "accuracy_wrong_gt_yes": 0.7,
+      "accuracy_wrong_gt_no": 0.7666666666666667
+    },
+    {
+      "layer": 11,
+      "accuracy": 0.875,
+      "auc": 0.9311422522431697,
+      "accuracy_correct_questions": 0.95,
+      "accuracy_wrong_questions": 0.8,
+      "accuracy_wrong_gt_yes": 0.9,
+      "accuracy_wrong_gt_no": 0.7888888888888889
+    },
+    {
+      "layer": 12,
+      "accuracy": 0.85,
+      "auc": 0.9256981550559532,
+      "accuracy_correct_questions": 0.92,
+      "accuracy_wrong_questions": 0.78,
+      "accuracy_wrong_gt_yes": 0.8,
+      "accuracy_wrong_gt_no": 0.7777777777777778
+    },
+    {
+      "layer": 13,
+      "accuracy": 0.855,
+      "auc": 0.9200524246395806,
+      "accuracy_correct_questions": 0.94,
+      "accuracy_wrong_questions": 0.77,
+      "accuracy_wrong_gt_yes": 0.8,
+      "accuracy_wrong_gt_no": 0.7666666666666667
+    },
+    {
+      "layer": 14,
+      "accuracy": 0.835,
+      "auc": 0.9111805625567093,
+      "accuracy_correct_questions": 0.91,
+      "accuracy_wrong_questions": 0.76,
+      "accuracy_wrong_gt_yes": 0.9,
+      "accuracy_wrong_gt_no": 0.7444444444444445
+    },
+    {
+      "layer": 15,
+      "accuracy": 0.84,
+      "auc": 0.9196491581812682,
+      "accuracy_correct_questions": 0.92,
+      "accuracy_wrong_questions": 0.76,
+      "accuracy_wrong_gt_yes": 1.0,
+      "accuracy_wrong_gt_no": 0.7333333333333333
+    },
+    {
+      "layer": 16,
+      "accuracy": 0.855,
+      "auc": 0.9284202036495613,
+      "accuracy_correct_questions": 0.93,
+      "accuracy_wrong_questions": 0.78,
+      "accuracy_wrong_gt_yes": 0.9,
+      "accuracy_wrong_gt_no": 0.7666666666666667
+    },
+    {
+      "layer": 17,
+      "accuracy": 0.845,
+      "auc": 0.9241859058372821,
+      "accuracy_correct_questions": 0.91,
+      "accuracy_wrong_questions": 0.78,
+      "accuracy_wrong_gt_yes": 0.7,
+      "accuracy_wrong_gt_no": 0.7888888888888889
+    },
+    {
+      "layer": 18,
+      "accuracy": 0.87,
+      "auc": 0.9362838995866519,
+      "accuracy_correct_questions": 0.92,
+      "accuracy_wrong_questions": 0.82,
+      "accuracy_wrong_gt_yes": 0.8,
+      "accuracy_wrong_gt_no": 0.8222222222222222
+    },
+    {
+      "layer": 19,
+      "accuracy": 0.89,
+      "auc": 0.9326545014618409,
+      "accuracy_correct_questions": 0.94,
+      "accuracy_wrong_questions": 0.84,
+      "accuracy_wrong_gt_yes": 0.8,
+      "accuracy_wrong_gt_no": 0.8444444444444444
+    },
+    {
+      "layer": 20,
+      "accuracy": 0.875,
+      "auc": 0.931545518701482,
+      "accuracy_correct_questions": 0.91,
+      "accuracy_wrong_questions": 0.84,
+      "accuracy_wrong_gt_yes": 0.8,
+      "accuracy_wrong_gt_no": 0.8444444444444444
+    },
+    {
+      "layer": 21,
+      "accuracy": 0.895,
+      "auc": 0.9261014215142656,
+      "accuracy_correct_questions": 0.95,
+      "accuracy_wrong_questions": 0.84,
+      "accuracy_wrong_gt_yes": 0.9,
+      "accuracy_wrong_gt_no": 0.8333333333333334
+    },
+    {
+      "layer": 22,
+      "accuracy": 0.855,
+      "auc": 0.9287226534932957,
+      "accuracy_correct_questions": 0.92,
+      "accuracy_wrong_questions": 0.79,
+      "accuracy_wrong_gt_yes": 0.8,
+      "accuracy_wrong_gt_no": 0.7888888888888889
+    },
+    {
+      "layer": 23,
+      "accuracy": 0.87,
+      "auc": 0.9321504183889506,
+      "accuracy_correct_questions": 0.93,
+      "accuracy_wrong_questions": 0.81,
+      "accuracy_wrong_gt_yes": 0.9,
+      "accuracy_wrong_gt_no": 0.8
+    },
+    {
+      "layer": 24,
+      "accuracy": 0.88,
+      "auc": 0.9376953321907451,
+      "accuracy_correct_questions": 0.94,
+      "accuracy_wrong_questions": 0.82,
+      "accuracy_wrong_gt_yes": 0.9,
+      "accuracy_wrong_gt_no": 0.8111111111111111
+    },
+    {
+      "layer": 25,
+      "accuracy": 0.86,
+      "auc": 0.9335618509930437,
+      "accuracy_correct_questions": 0.93,
+      "accuracy_wrong_questions": 0.79,
+      "accuracy_wrong_gt_yes": 0.9,
+      "accuracy_wrong_gt_no": 0.7777777777777778
+    },
+    {
+      "layer": 26,
+      "accuracy": 0.865,
+      "auc": 0.9393083980239944,
+      "accuracy_correct_questions": 0.95,
+      "accuracy_wrong_questions": 0.78,
+      "accuracy_wrong_gt_yes": 0.9,
+      "accuracy_wrong_gt_no": 0.7666666666666667
+    },
+    {
+      "layer": 27,
+      "accuracy": 0.865,
+      "auc": 0.9365863494303862,
+      "accuracy_correct_questions": 0.95,
+      "accuracy_wrong_questions": 0.78,
+      "accuracy_wrong_gt_yes": 0.9,
+      "accuracy_wrong_gt_no": 0.7666666666666667
+    },
+    {
+      "layer": 28,
+      "accuracy": 0.89,
+      "auc": 0.9442484121383203,
+      "accuracy_correct_questions": 0.95,
+      "accuracy_wrong_questions": 0.83,
+      "accuracy_wrong_gt_yes": 0.9,
+      "accuracy_wrong_gt_no": 0.8222222222222222
+    },
+    {
+      "layer": 29,
+      "accuracy": 0.885,
+      "auc": 0.948684343179756,
+      "accuracy_correct_questions": 0.94,
+      "accuracy_wrong_questions": 0.83,
+      "accuracy_wrong_gt_yes": 0.9,
+      "accuracy_wrong_gt_no": 0.8222222222222222
+    },
+    {
+      "layer": 30,
+      "accuracy": 0.865,
+      "auc": 0.9428369795342273,
+      "accuracy_correct_questions": 0.94,
+      "accuracy_wrong_questions": 0.79,
+      "accuracy_wrong_gt_yes": 0.9,
+      "accuracy_wrong_gt_no": 0.7777777777777778
+    },
+    {
+      "layer": 31,
+      "accuracy": 0.87,
+      "auc": 0.9367879826595423,
+      "accuracy_correct_questions": 0.94,
+      "accuracy_wrong_questions": 0.8,
+      "accuracy_wrong_gt_yes": 0.9,
+      "accuracy_wrong_gt_no": 0.7888888888888889
+    },
+    {
+      "layer": 32,
+      "accuracy": 0.885,
+      "auc": 0.9444500453674765,
+      "accuracy_correct_questions": 0.96,
+      "accuracy_wrong_questions": 0.81,
+      "accuracy_wrong_gt_yes": 0.9,
+      "accuracy_wrong_gt_no": 0.8
+    }
+  ],
+  "num_train": 800,
+  "num_test": 200,
+  "model_accuracy": {
+    "overall": 0.515,
+    "correct_questions": 1.0,
+    "wrong_questions": 0.03,
+    "num_test_pairs": 100
+  }
+}

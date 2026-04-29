@@ -1,0 +1,59 @@
+{
+  "target_layer": 15,
+  "best_lr_bias": 0.003,
+  "best_lr_correction": 0.003,
+  "results": {
+    "raw_model": {
+      "overall": 0.6542802569890606,
+      "gt_yes": 0.6399929027679205,
+      "gt_no": 0.6679700782046922,
+      "adversarial": 0.6537165158772397,
+      "adv_paired": 0.3587402161759225,
+      "adv_wo_pair": 0.6677226984718598,
+      "n_total": 11518,
+      "n_gt_yes": 5636,
+      "n_gt_no": 5882,
+      "n_adversarial": 5637,
+      "n_pairs": 5366
+    },
+    "bias": {
+      "overall": 0.6646119117902414,
+      "gt_yes": 0.6055713271823988,
+      "gt_no": 0.7211832709962598,
+      "adversarial": 0.7090651055525989,
+      "adv_paired": 0.36861721953037646,
+      "adv_wo_pair": 0.6315691390234812,
+      "n_total": 11518,
+      "n_gt_yes": 5636,
+      "n_gt_no": 5882,
+      "n_adversarial": 5637,
+      "n_pairs": 5366
+    },
+    "logistic_regression": {
+      "overall": 0.7839034554610176,
+      "gt_yes": 0.7778566359119943,
+      "gt_no": 0.7896973818429106,
+      "adversarial": 0.7959907752350541,
+      "adv_paired": 0.6559821095788296,
+      "adv_wo_pair": 0.7841967946328736,
+      "n_total": 11518,
+      "n_gt_yes": 5636,
+      "n_gt_no": 5882,
+      "n_adversarial": 5637,
+      "n_pairs": 5366
+    },
+    "correction": {
+      "overall": 0.7816461191179024,
+      "gt_yes": 0.7913413768630234,
+      "gt_no": 0.7723563413804828,
+      "adversarial": 0.784282419726805,
+      "adv_paired": 0.6496459187476705,
+      "adv_wo_pair": 0.7974282519567648,
+      "n_total": 11518,
+      "n_gt_yes": 5636,
+      "n_gt_no": 5882,
+      "n_adversarial": 5637,
+      "n_pairs": 5366
+    }
+  }
+}
