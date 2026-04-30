@@ -1,0 +1,54 @@
+{
+  "model": "medgemma",
+  "layer": 26,
+  "epochs": 10,
+  "lr": 0.0001,
+  "hidden_size": 2560,
+  "gt_only_yes_no_rates": {
+    "raw_yes_rate": 0.41022001419446413,
+    "raw_no_rate": 0.16326530612244897,
+    "corrected_yes_rate": 0.8401348474095103,
+    "corrected_no_rate": 0.27755102040816326
+  },
+  "results": {
+    "vector_correction": {
+      "overall": 0.810731029692655,
+      "gt_yes": 0.8401348474095103,
+      "gt_no": 0.782556953417205,
+      "adversarial": 0.7851694163562178,
+      "adv_paired": 0.665672754379426,
+      "adv_wo_pair": 0.8415952292210213,
+      "n_total": 11518,
+      "n_gt_yes": 5636,
+      "n_gt_no": 5882,
+      "n_adversarial": 5637,
+      "n_pairs": 5366
+    },
+    "raw_model": {
+      "overall": 0.509897551658274,
+      "gt_yes": 0.41022001419446413,
+      "gt_no": 0.6054063243794627,
+      "adversarial": 0.5953521376618769,
+      "adv_paired": 0.0,
+      "adv_wo_pair": 0.41651136787178533,
+      "n_total": 11518,
+      "n_gt_yes": 5636,
+      "n_gt_no": 5882,
+      "n_adversarial": 5637,
+      "n_pairs": 5366
+    },
+    "category_bias": {
+      "overall": 0.7821670428893905,
+      "gt_yes": 0.8717175301632364,
+      "gt_no": 0.6963617817069024,
+      "adversarial": 0.707823310271421,
+      "adv_paired": 0.6175922474841595,
+      "adv_wo_pair": 0.8678717853149459,
+      "n_total": 11518,
+      "n_gt_yes": 5636,
+      "n_gt_no": 5882,
+      "n_adversarial": 5637,
+      "n_pairs": 5366
+    }
+  }
+}

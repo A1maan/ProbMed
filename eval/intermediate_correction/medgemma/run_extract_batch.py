@@ -33,7 +33,7 @@ def _last_line(path):
 
 def build_cmd(chunk_idx, args, extract_script):
     return (
-        f"CUDA_VISIBLE_DEVICES={chunk_idx} python {extract_script} "
+        f"CUDA_VISIBLE_DEVICES={chunk_idx} /venv/main/bin/python3 {extract_script} "
         f"--inference-file {args.inference_file} "
         f"--test-file {args.test_file} "
         f"--image-folder {args.image_folder} "
