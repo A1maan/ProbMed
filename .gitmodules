@@ -1,3 +1,6 @@
 [submodule "eval/eval/honest_llama"]
 	path = eval/eval/honest_llama
 	url = git@github.com:likenneth/honest_llama.git
+[submodule "eval/honest_llama"]
+	path = eval/honest_llama
+	url = git@github.com:likenneth/honest_llama.git
