@@ -14,6 +14,7 @@ import sys
 import time
 
 EXPERIMENT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ITI_DIR = os.path.dirname(os.path.abspath(__file__))  # outputs live here, under iti/
 sys.path.insert(0, EXPERIMENT_DIR)
 
 from intermediate_layer_correction import MODEL_DEFAULTS
@@ -98,11 +99,7 @@ def wait_and_check(procs):
 
 
 def merge(output_dir, num_chunks):
-    python_bin = os.environ.get("PYTHON", "/venv/main/bin/python3")
-    if not os.path.exists(python_bin):
-        python_bin = "python3"
-    cmd = f"{python_bin} {SCRIPT} --model placeholder --merge-only --num-chunks {num_chunks} --output-dir {output_dir} --results-file x --test-file x --image-folder x"
-    # call merge_chunks directly via import to avoid arg conflicts
+    # Import and call directly to avoid argparse conflicts with the worker script.
     sys.path.insert(0, os.path.dirname(SCRIPT))
     from extract_head_activations import merge_chunks
     merge_chunks(output_dir, num_chunks)
@@ -122,7 +119,7 @@ def main():
     args = parser.parse_args()
 
     output_dir = args.output_dir or os.path.join(
-        EXPERIMENT_DIR, args.model, "results", "iti_head_activations"
+        ITI_DIR, "results", args.model, "iti_head_activations"
     )
     os.makedirs(output_dir, exist_ok=True)
 

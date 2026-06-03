@@ -3,14 +3,18 @@ Phase 2: Train per-head LR probes on extracted activations, select top-K heads,
 and run ITI inference on the test set.
 
 Reads head_activations.npz produced by extract_head_activations.py.
-Saves:
-    probe_accs.npy          (num_layers, num_heads) val accuracy per head
-    top_heads.json          list of [layer, head] pairs selected
-    directions.npz          (num_selected_layers, num_heads*head_dim) direction tensors
-    results.json / .csv     test metrics
+Trains probes + loads model ONCE, then sweeps the K x alpha grid (model and the
+alpha=0 baseline are reused across all configs).
 
-Usage:
+Saves under results/<model>/sweep/:
+    probe_accs.npy                  (num_layers, num_heads) val accuracy per head
+    sweep_summary.csv               one row per (K, alpha) config + shared baseline
+    iti_top{K}_alpha{A}/            per-config: top_heads.json, directions.npz, results.json/.csv
+
+Usage (single config):
     python train_iti_probes.py --model llavamed --num-heads 48 --alpha 15
+Usage (sweep):
+    python train_iti_probes.py --model llavamed --num-heads 16,32,48 --alpha 15,30,50,100
 """
 
 import argparse
@@ -26,10 +30,14 @@ from sklearn.metrics import accuracy_score
 from tqdm import tqdm
 
 EXPERIMENT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ITI_DIR = os.path.dirname(os.path.abspath(__file__))  # outputs live here, under iti/
 sys.path.insert(0, EXPERIMENT_DIR)
 
 from intermediate_layer_correction import MODEL_DEFAULTS, build_runner, load_questions
 from train_intermediate_correction import compute_metrics, print_results_table
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from extract_head_activations import get_head_config, get_o_proj
 
 
 # ---------------------------------------------------------------------------
@@ -56,7 +64,7 @@ def train_probes(activations, labels, train_idxs, val_idxs, seed):
         for head in range(num_heads):
             X_tr = X_train_all[:, layer, head, :]
             X_va = X_val_all[:,   layer, head, :]
-            clf = LogisticRegression(max_iter=1000, random_state=seed, solver="saga")
+            clf = LogisticRegression(max_iter=1000, random_state=seed)
             clf.fit(X_tr, y_train)
             val_accs[layer, head] = accuracy_score(y_val, clf.predict(X_va))
             probes.append(clf)
@@ -139,7 +147,8 @@ def run_iti_inference(runner, questions, directions, alpha, test_ids, logger=Non
         handles = []
 
         def make_hook(d_tensor):
-            def hook_fn(_module, args, _output):
+            # forward_pre_hook signature is (module, args); mutate input to o_proj in place
+            def hook_fn(_module, args):
                 h = args[0]  # (batch, seq_len, H*D)
                 h[0, -1, :] = h[0, -1, :] + alpha * d_tensor.to(
                     device=h.device, dtype=h.dtype
@@ -147,7 +156,7 @@ def run_iti_inference(runner, questions, directions, alpha, test_ids, logger=Non
             return hook_fn
 
         for layer_idx, d_tensor in direction_tensors.items():
-            h = runner.layers[layer_idx].self_attn.o_proj.register_forward_pre_hook(
+            h = get_o_proj(runner.layers[layer_idx]).register_forward_pre_hook(
                 make_hook(d_tensor)
             )
             handles.append(h)
@@ -205,16 +214,19 @@ def main():
     parser.add_argument("--test-file",      required=True)
     parser.add_argument("--image-folder",   required=True)
     parser.add_argument("--activations-dir", default=None,
-                        help="Dir containing head_activations.npz (default: model/results/iti_head_activations)")
-    parser.add_argument("--output-dir",     default=None)
-    parser.add_argument("--num-heads",      type=int, default=48,
-                        help="Number of top heads to intervene on")
-    parser.add_argument("--alpha",          type=float, default=15.0,
-                        help="ITI intervention strength")
+                        help="Dir containing head_activations.npz (default: iti/results/<model>/iti_head_activations)")
+    parser.add_argument("--output-dir",     default=None,
+                        help="Base dir for sweep outputs (default: iti/results/<model>/sweep)")
+    parser.add_argument("--num-heads",      type=str, default="48",
+                        help="Number of top heads to intervene on. Comma-separated list to sweep, e.g. 16,32,48")
+    parser.add_argument("--alpha",          type=str, default="15",
+                        help="ITI intervention strength. Comma-separated list to sweep, e.g. 15,30,50,100")
     parser.add_argument("--val-ratio",      type=float, default=0.2)
     parser.add_argument("--use-com",        action="store_true", default=False,
                         help="Use center-of-mass direction instead of LR coef")
     parser.add_argument("--load-8bit",      action="store_true", default=False)
+    parser.add_argument("--limit-test",     type=int, default=None,
+                        help="Cap number of test questions for inference (smoke testing only)")
     parser.add_argument("--seed",           type=int, default=42)
     args = parser.parse_args()
 
@@ -224,15 +236,18 @@ def main():
     defaults   = MODEL_DEFAULTS[args.model]
     model_name = args.model_name or defaults["model_name"]
 
+    # Parse sweep lists
+    k_list     = [int(x)   for x in str(args.num_heads).split(",") if x.strip()]
+    alpha_list = [float(x) for x in str(args.alpha).split(",")     if x.strip()]
+    print(f"Sweep grid — K: {k_list}  alpha: {alpha_list}  ({len(k_list)*len(alpha_list)} configs)")
+
     acts_dir = args.activations_dir or os.path.join(
-        EXPERIMENT_DIR, args.model, "results", "iti_head_activations"
+        ITI_DIR, "results", args.model, "iti_head_activations"
     )
-    output_dir = args.output_dir or os.path.join(
-        EXPERIMENT_DIR, args.model, "results",
-        f"iti_top{args.num_heads}_alpha{int(args.alpha)}"
-        + ("_com" if args.use_com else "")
+    sweep_dir = args.output_dir or os.path.join(
+        ITI_DIR, "results", args.model, "sweep" + ("_com" if args.use_com else "")
     )
-    os.makedirs(output_dir, exist_ok=True)
+    os.makedirs(sweep_dir, exist_ok=True)
 
     # --- Load activations ---
     npz_path = os.path.join(acts_dir, "head_activations.npz")
@@ -250,12 +265,26 @@ def main():
     # --- Train / val / test split (image-id level, matching existing convention) ---
     all_questions = load_questions(args.results_file, args.test_file, args.image_folder)
 
-    # Reuse test_image_ids from offline_correction if available, else 20% holdout
-    test_ids_path = os.path.join(
-        EXPERIMENT_DIR, args.model, "results",
-        f"offline_correction_layer{defaults['layer']}", "test_image_ids.json"
-    )
-    if os.path.exists(test_ids_path):
+    # Reuse test_image_ids from offline_correction so adv_paired is comparable to the
+    # logistic_regression baseline. defaults['layer'] is None for chexagent/medgemma, so
+    # glob for the offline_correction_layer* dir instead of constructing the path from it.
+    import glob
+    test_ids_path = None
+    if defaults.get("layer") is not None:
+        cand = os.path.join(EXPERIMENT_DIR, args.model, "results",
+                            f"offline_correction_layer{defaults['layer']}", "test_image_ids.json")
+        if os.path.exists(cand):
+            test_ids_path = cand
+    if test_ids_path is None:
+        matches = sorted(glob.glob(os.path.join(
+            EXPERIMENT_DIR, args.model, "results",
+            "offline_correction_layer*", "test_image_ids.json")))
+        if len(matches) > 1:
+            print(f"WARNING: multiple offline_correction test splits found, using first: {matches}")
+        if matches:
+            test_ids_path = matches[0]
+
+    if test_ids_path is not None:
         with open(test_ids_path) as f:
             test_ids = set(json.load(f))
         print(f"Reusing test split from {test_ids_path}  ({len(test_ids)} images)")
@@ -270,6 +299,10 @@ def main():
     test_qs  = [q for q in all_questions if q["id"] in test_ids]
     train_qs = [q for q in all_questions if q["id"] not in test_ids]
 
+    if args.limit_test is not None:
+        test_qs = test_qs[:args.limit_test]
+        print(f"[smoke] capping test_qs to {len(test_qs)} questions")
+
     # Probe train/val split on the activation indices (exclude test images)
     train_act_mask = np.isin(act_image_ids, [q["id"] for q in train_qs])
     train_idxs = np.where(train_act_mask)[0]
@@ -281,67 +314,77 @@ def main():
 
     print(f"Probe split — train: {len(inner_idxs)}  val: {len(val_idxs)}  test_qs: {len(test_qs)}")
 
-    # --- Train probes ---
+    # --- Train probes ONCE (independent of K and alpha) ---
     print(f"\nTraining {num_layers * num_heads} probes ({num_layers}L x {num_heads}H)...")
     probes, val_accs = train_probes(activations, labels, inner_idxs, val_idxs, args.seed)
-
-    np.save(os.path.join(output_dir, "probe_accs.npy"), val_accs)
+    np.save(os.path.join(sweep_dir, "probe_accs.npy"), val_accs)
     print(f"Val acc — mean: {val_accs.mean():.4f}  max: {val_accs.max():.4f}")
 
-    top_heads = get_top_heads(val_accs, args.num_heads)
-    print(f"Top {args.num_heads} heads (layer, head): {sorted(top_heads)[:10]} ...")
-    with open(os.path.join(output_dir, "top_heads.json"), "w") as f:
-        json.dump(top_heads, f)
-
-    # --- Build directions ---
-    directions = build_directions(
-        top_heads, probes, activations[train_idxs], num_heads, head_dim,
-        args.use_com, labels[train_idxs]
-    )
-    np.savez(
-        os.path.join(output_dir, "directions.npz"),
-        **{f"layer_{l}": d for l, d in directions.items()}
-    )
-
-    # --- Load model and run inference ---
+    # --- Load model ONCE ---
     print(f"\nLoading model for inference...")
     runner = build_runner(args.model, model_name, args.load_8bit)
     runner.model.eval()
 
-    print(f"Running ITI inference (alpha={args.alpha})...")
-    rec_iti = run_iti_inference(runner, test_qs, directions, args.alpha, test_ids)
+    # --- Baseline (alpha=0) inference ONCE (identical for every config) ---
     print("Running baseline inference (alpha=0)...")
-    rec_raw = run_iti_inference(runner, test_qs, directions, 0.0, test_ids)
-
-    all_results = {
-        "raw_model": compute_metrics(*records_to_arrays(rec_raw)),
-        "iti":       compute_metrics(*records_to_arrays(rec_iti)),
-    }
-    print_results_table(all_results)
-
-    # --- Save outputs ---
-    out = {
-        "method":     "iti",
-        "model":      args.model,
-        "num_heads":  args.num_heads,
-        "alpha":      args.alpha,
-        "use_com":    args.use_com,
-        "results":    all_results,
-    }
-    with open(os.path.join(output_dir, "results.json"), "w") as f:
-        json.dump(out, f, indent=2)
+    rec_raw = run_iti_inference(runner, test_qs, {}, 0.0, test_ids)
+    raw_metrics = compute_metrics(*records_to_arrays(rec_raw))
 
     metric_cols = ["overall", "gt_yes", "gt_no", "adversarial", "adv_paired", "adv_wo_pair"]
-    with open(os.path.join(output_dir, "results.csv"), "w", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=["method"] + metric_cols)
-        writer.writeheader()
-        for method, res in all_results.items():
-            writer.writerow({
-                "method": method,
-                **{m: f"{res.get(m, float('nan')):.4f}" for m in metric_cols}
-            })
+    sweep_rows = []
 
-    print(f"\nDone. Results in: {output_dir}")
+    # --- Sweep K x alpha ---
+    for K in k_list:
+        top_heads = get_top_heads(val_accs, K)
+        directions = build_directions(
+            top_heads, probes, activations[train_idxs], num_heads, head_dim,
+            args.use_com, labels[train_idxs]
+        )
+        for alpha in alpha_list:
+            cfg_name = f"iti_top{K}_alpha{int(alpha)}" + ("_com" if args.use_com else "")
+            cfg_dir = os.path.join(sweep_dir, cfg_name)
+            os.makedirs(cfg_dir, exist_ok=True)
+            with open(os.path.join(cfg_dir, "top_heads.json"), "w") as f:
+                json.dump(top_heads, f)
+            np.savez(os.path.join(cfg_dir, "directions.npz"),
+                     **{f"layer_{l}": d for l, d in directions.items()})
+
+            print(f"\n=== config K={K} alpha={alpha} ===")
+            rec_iti = run_iti_inference(runner, test_qs, directions, alpha, test_ids)
+            iti_metrics = compute_metrics(*records_to_arrays(rec_iti))
+
+            all_results = {"raw_model": raw_metrics, "iti": iti_metrics}
+            print_results_table(all_results)
+
+            out = {"method": "iti", "model": args.model, "num_heads": K,
+                   "alpha": alpha, "use_com": args.use_com, "results": all_results}
+            with open(os.path.join(cfg_dir, "results.json"), "w") as f:
+                json.dump(out, f, indent=2)
+            with open(os.path.join(cfg_dir, "results.csv"), "w", newline="") as f:
+                w = csv.DictWriter(f, fieldnames=["method"] + metric_cols)
+                w.writeheader()
+                for method, res in all_results.items():
+                    w.writerow({"method": method,
+                                **{m: f"{res.get(m, float('nan')):.4f}" for m in metric_cols}})
+
+            sweep_rows.append({"num_heads": K, "alpha": alpha,
+                               **{m: iti_metrics.get(m, float("nan")) for m in metric_cols}})
+
+    # --- Aggregate sweep summary (one row per config + the shared baseline) ---
+    with open(os.path.join(sweep_dir, "sweep_summary.csv"), "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=["num_heads", "alpha"] + metric_cols)
+        w.writeheader()
+        w.writerow({"num_heads": "raw", "alpha": 0,
+                    **{m: f"{raw_metrics.get(m, float('nan')):.4f}" for m in metric_cols}})
+        for r in sweep_rows:
+            w.writerow({"num_heads": r["num_heads"], "alpha": r["alpha"],
+                        **{m: f"{r[m]:.4f}" for m in metric_cols}})
+
+    print(f"\nBaseline adv_paired: {raw_metrics.get('adv_paired', float('nan')):.4f}")
+    best = max(sweep_rows, key=lambda r: (r["adv_paired"] if r["adv_paired"] == r["adv_paired"] else -1))
+    print(f"Best ITI config: K={best['num_heads']} alpha={best['alpha']}  "
+          f"adv_paired={best['adv_paired']:.4f}")
+    print(f"\nDone. Sweep results in: {sweep_dir}/sweep_summary.csv")
 
 
 if __name__ == "__main__":

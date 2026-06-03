@@ -30,9 +30,46 @@ import torch
 from tqdm import tqdm
 
 EXPERIMENT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ITI_DIR = os.path.dirname(os.path.abspath(__file__))  # outputs live here, under iti/
 sys.path.insert(0, EXPERIMENT_DIR)
 
 from intermediate_layer_correction import MODEL_DEFAULTS, build_runner, load_questions
+
+
+def get_head_config(runner):
+    """
+    Resolve (num_heads, head_dim) for the model's attention output projection.
+
+    head_dim must come from the config when present (e.g. MedGemma/Gemma3 set an
+    explicit head_dim=256 with hidden_size=2560, num_heads=8, so
+    hidden_size // num_heads = 320 is WRONG). Falls back to hidden_size // num_heads
+    only when no explicit head_dim is configured (e.g. Mistral/LLaVA-Med).
+    """
+    cfg = getattr(runner.model, "config", None)
+    text_cfg = getattr(cfg, "text_config", cfg)
+    num_heads = text_cfg.num_attention_heads
+    hidden_size = text_cfg.hidden_size
+    head_dim = getattr(text_cfg, "head_dim", None) or (hidden_size // num_heads)
+    return num_heads, head_dim
+
+
+def get_o_proj(layer):
+    """
+    Return the attention output-projection module for a decoder layer.
+
+    Most models (Mistral/LLaVA-Med, Gemma/MedGemma) name it `o_proj`; CheXagent is
+    Phi-based and names it `dense`. Both take input of shape
+    (batch, seq, num_heads * head_dim) — the per-head concatenation we slice on.
+    """
+    attn = layer.self_attn
+    proj = getattr(attn, "o_proj", None)
+    if proj is None:
+        proj = getattr(attn, "dense", None)
+    if proj is None:
+        raise AttributeError(
+            f"No output projection (o_proj/dense) found on {type(attn).__name__}"
+        )
+    return proj
 
 
 def split_list(lst, n):
@@ -68,12 +105,8 @@ def extract_head_activations(runner, questions, output_dir, chunk_idx, num_chunk
     num_layers = len(runner.layers)
 
     # Infer num_heads and head_dim from the model config.
-    # Works for LlavaForConditionalGeneration, CheXagent (CausalLM), MedGemma.
-    cfg = getattr(runner.model, "config", None)
-    text_cfg = getattr(cfg, "text_config", cfg)
-    num_heads = text_cfg.num_attention_heads
-    hidden_size = text_cfg.hidden_size
-    head_dim = hidden_size // num_heads
+    # Works for LlavaForConditionalGeneration, CheXagent (Phi/CausalLM), MedGemma.
+    num_heads, head_dim = get_head_config(runner)
 
     print(f"Model: {num_layers} layers, {num_heads} heads, head_dim={head_dim}")
 
@@ -94,7 +127,8 @@ def extract_head_activations(runner, questions, output_dir, chunk_idx, num_chunk
         layer_acts = [None] * num_layers
 
         def make_hook(layer_idx):
-            def hook_fn(_module, args, _output):
+            # forward_pre_hook signature is (module, args); args[0] is the input to o_proj
+            def hook_fn(_module, args):
                 # args[0] shape: (batch, seq_len, num_heads * head_dim)
                 h = args[0]
                 last = h[0, -1, :].detach().float().cpu()   # (num_heads * head_dim,)
@@ -103,7 +137,7 @@ def extract_head_activations(runner, questions, output_dir, chunk_idx, num_chunk
 
         handles = []
         for li, layer in enumerate(runner.layers):
-            h = layer.self_attn.o_proj.register_forward_pre_hook(make_hook(li))
+            h = get_o_proj(layer).register_forward_pre_hook(make_hook(li))
             handles.append(h)
 
         prepared = None
@@ -122,7 +156,6 @@ def extract_head_activations(runner, questions, output_dir, chunk_idx, num_chunk
                 "image_id": int(q["id"]),
                 "qa_type": q.get("qa_type", ""),
                 "image_type": q.get("image_type", ""),
-                "model_pred": q.get("model_pred", ""),
                 "is_correct": bool(q.get("is_correct", False)),
             })
         except Exception as e:
@@ -198,7 +231,7 @@ def main():
     defaults = MODEL_DEFAULTS[args.model]
     model_name = args.model_name or defaults["model_name"]
     output_dir = args.output_dir or os.path.join(
-        EXPERIMENT_DIR, args.model, "results", "iti_head_activations"
+        ITI_DIR, "results", args.model, "iti_head_activations"
     )
 
     if args.merge_only:
