@@ -227,6 +227,10 @@ def main():
     parser.add_argument("--load-8bit",      action="store_true", default=False)
     parser.add_argument("--limit-test",     type=int, default=None,
                         help="Cap number of test questions for inference (smoke testing only)")
+    parser.add_argument("--num-chunks",     type=int, default=1,
+                        help="Shard test images across this many workers (1 = no sharding)")
+    parser.add_argument("--chunk-idx",      type=int, default=0,
+                        help="Which test-image shard this worker handles [0, num_chunks)")
     parser.add_argument("--seed",           type=int, default=42)
     args = parser.parse_args()
 
@@ -303,6 +307,16 @@ def main():
         test_qs = test_qs[:args.limit_test]
         print(f"[smoke] capping test_qs to {len(test_qs)} questions")
 
+    # Shard test questions by image_id (keeps gt/hallu PAIRS together for adv_paired).
+    sharded = args.num_chunks > 1
+    if sharded:
+        shard_img_ids = sorted({q["id"] for q in test_qs})
+        rng_s = np.random.RandomState(args.seed)
+        rng_s.shuffle(shard_img_ids)
+        mine = set(shard_img_ids[args.chunk_idx::args.num_chunks])
+        test_qs = [q for q in test_qs if q["id"] in mine]
+        print(f"[shard {args.chunk_idx}/{args.num_chunks}] {len(mine)} images, {len(test_qs)} test_qs")
+
     # Probe train/val split on the activation indices (exclude test images)
     train_act_mask = np.isin(act_image_ids, [q["id"] for q in train_qs])
     train_idxs = np.where(train_act_mask)[0]
@@ -325,13 +339,14 @@ def main():
     runner = build_runner(args.model, model_name, args.load_8bit)
     runner.model.eval()
 
+    metric_cols = ["overall", "gt_yes", "gt_no", "adversarial", "adv_paired", "adv_wo_pair"]
+    suffix = f"_chunk{args.chunk_idx}" if sharded else ""
+    # records[cfg_key] = list of per-question records; cfg_key "raw" is the alpha=0 baseline
+    records_by_cfg = {}
+
     # --- Baseline (alpha=0) inference ONCE (identical for every config) ---
     print("Running baseline inference (alpha=0)...")
-    rec_raw = run_iti_inference(runner, test_qs, {}, 0.0, test_ids)
-    raw_metrics = compute_metrics(*records_to_arrays(rec_raw))
-
-    metric_cols = ["overall", "gt_yes", "gt_no", "adversarial", "adv_paired", "adv_wo_pair"]
-    sweep_rows = []
+    records_by_cfg["raw"] = run_iti_inference(runner, test_qs, {}, 0.0, test_ids)
 
     # --- Sweep K x alpha ---
     for K in k_list:
@@ -344,41 +359,67 @@ def main():
             cfg_name = f"iti_top{K}_alpha{int(alpha)}" + ("_com" if args.use_com else "")
             cfg_dir = os.path.join(sweep_dir, cfg_name)
             os.makedirs(cfg_dir, exist_ok=True)
-            with open(os.path.join(cfg_dir, "top_heads.json"), "w") as f:
-                json.dump(top_heads, f)
-            np.savez(os.path.join(cfg_dir, "directions.npz"),
-                     **{f"layer_{l}": d for l, d in directions.items()})
+            # Direction artifacts are shard-independent; only chunk 0 writes them.
+            if args.chunk_idx == 0:
+                with open(os.path.join(cfg_dir, "top_heads.json"), "w") as f:
+                    json.dump(top_heads, f)
+                np.savez(os.path.join(cfg_dir, "directions.npz"),
+                         **{f"layer_{l}": d for l, d in directions.items()})
 
             print(f"\n=== config K={K} alpha={alpha} ===")
             rec_iti = run_iti_inference(runner, test_qs, directions, alpha, test_ids)
-            iti_metrics = compute_metrics(*records_to_arrays(rec_iti))
+            records_by_cfg[cfg_name] = rec_iti
+            if not sharded:
+                _write_config_results(cfg_dir, args, K, alpha,
+                                      records_by_cfg["raw"], rec_iti, metric_cols)
 
-            all_results = {"raw_model": raw_metrics, "iti": iti_metrics}
-            print_results_table(all_results)
+    # Persist raw records for this run (merge step needs them when sharded; harmless otherwise)
+    with open(os.path.join(sweep_dir, f"records{suffix}.json"), "w") as f:
+        json.dump(records_by_cfg, f)
+    print(f"Saved records: {sweep_dir}/records{suffix}.json")
 
-            out = {"method": "iti", "model": args.model, "num_heads": K,
-                   "alpha": alpha, "use_com": args.use_com, "results": all_results}
-            with open(os.path.join(cfg_dir, "results.json"), "w") as f:
-                json.dump(out, f, indent=2)
-            with open(os.path.join(cfg_dir, "results.csv"), "w", newline="") as f:
-                w = csv.DictWriter(f, fieldnames=["method"] + metric_cols)
-                w.writeheader()
-                for method, res in all_results.items():
-                    w.writerow({"method": method,
-                                **{m: f"{res.get(m, float('nan')):.4f}" for m in metric_cols}})
+    if sharded:
+        print(f"[shard {args.chunk_idx}] done. Run merge_sweep.py to aggregate all shards.")
+        return
 
+    _write_sweep_summary(sweep_dir, records_by_cfg, k_list, alpha_list, args, metric_cols)
+
+
+def _write_config_results(cfg_dir, args, K, alpha, rec_raw, rec_iti, metric_cols):
+    raw_metrics = compute_metrics(*records_to_arrays(rec_raw))
+    iti_metrics = compute_metrics(*records_to_arrays(rec_iti))
+    all_results = {"raw_model": raw_metrics, "iti": iti_metrics}
+    print_results_table(all_results)
+    out = {"method": "iti", "model": args.model, "num_heads": K,
+           "alpha": alpha, "use_com": args.use_com, "results": all_results}
+    with open(os.path.join(cfg_dir, "results.json"), "w") as f:
+        json.dump(out, f, indent=2)
+    with open(os.path.join(cfg_dir, "results.csv"), "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=["method"] + metric_cols)
+        w.writeheader()
+        for method, res in all_results.items():
+            w.writerow({"method": method,
+                        **{m: f"{res.get(m, float('nan')):.4f}" for m in metric_cols}})
+
+
+def _write_sweep_summary(sweep_dir, records_by_cfg, k_list, alpha_list, args, metric_cols):
+    raw_metrics = compute_metrics(*records_to_arrays(records_by_cfg["raw"]))
+    sweep_rows = []
+    for K in k_list:
+        for alpha in alpha_list:
+            cfg_name = f"iti_top{K}_alpha{int(alpha)}" + ("_com" if args.use_com else "")
+            m = compute_metrics(*records_to_arrays(records_by_cfg[cfg_name]))
             sweep_rows.append({"num_heads": K, "alpha": alpha,
-                               **{m: iti_metrics.get(m, float("nan")) for m in metric_cols}})
+                               **{c: m.get(c, float("nan")) for c in metric_cols}})
 
-    # --- Aggregate sweep summary (one row per config + the shared baseline) ---
     with open(os.path.join(sweep_dir, "sweep_summary.csv"), "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=["num_heads", "alpha"] + metric_cols)
         w.writeheader()
         w.writerow({"num_heads": "raw", "alpha": 0,
-                    **{m: f"{raw_metrics.get(m, float('nan')):.4f}" for m in metric_cols}})
+                    **{c: f"{raw_metrics.get(c, float('nan')):.4f}" for c in metric_cols}})
         for r in sweep_rows:
             w.writerow({"num_heads": r["num_heads"], "alpha": r["alpha"],
-                        **{m: f"{r[m]:.4f}" for m in metric_cols}})
+                        **{c: f"{r[c]:.4f}" for c in metric_cols}})
 
     print(f"\nBaseline adv_paired: {raw_metrics.get('adv_paired', float('nan')):.4f}")
     best = max(sweep_rows, key=lambda r: (r["adv_paired"] if r["adv_paired"] == r["adv_paired"] else -1))

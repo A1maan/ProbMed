@@ -15,3 +15,4 @@ build/
 *.egg-info/
 *.npz
 .claude/
+.env
