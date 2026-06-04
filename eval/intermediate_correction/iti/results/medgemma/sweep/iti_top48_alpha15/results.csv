@@ -1,0 +1,3 @@
+method,overall,gt_yes,gt_no,adversarial,adv_paired,adv_wo_pair
+raw_model,0.7612,0.6938,0.8844,0.6354,0.5835,0.9132
+iti,0.7206,0.6415,0.9482,0.4994,0.4849,0.9720

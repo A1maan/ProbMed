@@ -1,0 +1,4 @@
+model,raw,best_ITI(+a),vector_correction,offline_correction,LR_ceiling,notes
+llavamed,0.3587,0.3265,0.5716,0.6496,0.6560,ITI best K=32 a=10.0 (sweep raw=0.3595); vc dir=vector_correction_layer15
+chexagent,0.3893,0.3805,0.5125,0.5496,0.6249,ITI best K=32 a=10.0 (sweep raw=0.3884); vc dir=vector_correction_layer21_5k10ep
+medgemma,0.5829,0.5384,0.6657,0.4642,0.7231,ITI best K=32 a=10.0 (sweep raw=0.5835); vc dir=vector_correction_layer26_5k10ep

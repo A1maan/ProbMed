@@ -1,0 +1,32 @@
+{
+  "num_heads": 48,
+  "alpha": 10.0,
+  "results": {
+    "raw_model": {
+      "overall": 0.7611564507727036,
+      "gt_yes": 0.6937541974479516,
+      "gt_no": 0.88436042229315,
+      "adversarial": 0.6354443853113358,
+      "adv_paired": 0.5834886321282147,
+      "adv_wo_pair": 0.9131569139023481,
+      "n_total": 11518,
+      "n_gt_yes": 7445,
+      "n_gt_no": 4073,
+      "n_adversarial": 5637,
+      "n_pairs": 5366
+    },
+    "iti": {
+      "overall": 0.7367598541413439,
+      "gt_yes": 0.6591687041564792,
+      "gt_no": 0.92690233672858,
+      "adversarial": 0.5481639169771155,
+      "adv_paired": 0.5232948192322028,
+      "adv_wo_pair": 0.9552739470741707,
+      "n_total": 11518,
+      "n_gt_yes": 8180,
+      "n_gt_no": 3338,
+      "n_adversarial": 5637,
+      "n_pairs": 5366
+    }
+  }
+}
